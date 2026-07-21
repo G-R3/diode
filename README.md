@@ -1,9 +1,5 @@
 # Diode
 
-<p align="center">
-  <img src="./public/diode-preview.png" alt="Diode breadboard circuit simulator" width="800">
-</p>
-
 Diode is a simple 3D breadboard simulator for learning basic circuits in the browser.
 
 Build a circuit with a battery, resistors, LEDs, push buttons, and jumper wires. Diode shows voltage, current, LED brightness, and common wiring problems as you work.
