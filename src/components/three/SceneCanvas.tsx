@@ -1,6 +1,5 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { TABLE_Y } from "@/lib/breadboard";
 import { useCircuitStore } from "@/store/circuitStore";
 import { BatteryModel } from "./BatteryModel";
 import { Breadboard } from "./Breadboard";
@@ -9,15 +8,7 @@ import { CurrentFlow } from "./CurrentFlow";
 import { GhostPreview } from "./GhostPreview";
 import { Labels } from "./Labels";
 import { WireModel } from "./WireModel";
-
-function Table() {
-  return (
-    <mesh position={[0, TABLE_Y - 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[400, 400]} />
-      <meshStandardMaterial color="#d7dade" roughness={0.95} />
-    </mesh>
-  );
-}
+import { WorkspaceMat } from "./WorkspaceMat";
 
 export function SceneCanvas() {
   const components = useCircuitStore((s) => s.components);
@@ -25,16 +16,19 @@ export function SceneCanvas() {
 
   return (
     <Canvas
-      camera={{ position: [0, 30, 26], fov: 42 }}
+      camera={{ position: [0, 58, 50], fov: 42, near: 1, far: 800 }}
       dpr={[1, 2]}
       onPointerMissed={() => useCircuitStore.getState().select(null)}
     >
-      <color attach="background" args={["#e3e6ea"]} />
-      <hemisphereLight args={["#ffffff", "#b8bcc4", 0.9]} />
-      <directionalLight position={[18, 30, 12]} intensity={1.6} />
-      <directionalLight position={[-14, 18, -10]} intensity={0.5} />
+      <color attach="background" args={["#0d0f13"]} />
+      {/* Fades the desk into the void at distance, but darkens the far side
+          of the mat at max zoom — disabled for now.
+      <fog attach="fog" args={["#0d0f13", 110, 260]} /> */}
+      <hemisphereLight args={["#ffffff", "#3a4150", 0.85]} />
+      <directionalLight position={[18, 30, 12]} intensity={1.7} />
+      <directionalLight position={[-14, 18, -10]} intensity={0.55} />
 
-      <Table />
+      <WorkspaceMat />
       <Breadboard />
       <BatteryModel />
       {components.map((comp) => (
@@ -51,7 +45,7 @@ export function SceneCanvas() {
         makeDefault
         target={[0, 0, 0]}
         minDistance={8}
-        maxDistance={90}
+        maxDistance={160}
         maxPolarAngle={Math.PI / 2 - 0.06}
         enableDamping
       />
