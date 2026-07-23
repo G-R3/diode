@@ -11,8 +11,6 @@ pnpm install
 pnpm dev
 ```
 
-Open the local address shown in your terminal.
-
 ## Commands
 
 ```sh
@@ -20,6 +18,6 @@ pnpm build  # Check and build the app
 pnpm lint   # Check the code
 ```
 
-You can export a circuit to JSON and import it later. 
+You can export a circuit to JSON and import it later.
 
 Note that Diode is an educational tool, not a full electronics design program.
