@@ -29,29 +29,46 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 function asFiniteNumber(v: unknown, label: string): number {
-  if (typeof v !== "number" || !Number.isFinite(v)) fail(`${label} must be a number`);
+  if (typeof v !== "number" || !Number.isFinite(v))
+    fail(`${label} must be a number`);
   return v;
 }
 
 function asHoleId(v: unknown, label: string): HoleId {
-  if (typeof v !== "string" || !parseHoleId(v)) fail(`${label} is not a valid hole`);
+  if (typeof v !== "string" || !parseHoleId(v))
+    fail(`${label} is not a valid hole`);
   return v as HoleId;
 }
 
-const LED_COLORS: readonly LedColor[] = ["red", "green", "blue", "yellow", "white"];
-const WIRE_COLORS: readonly WireColor[] = ["red", "black", "green", "blue", "yellow"];
+const LED_COLORS: readonly LedColor[] = [
+  "red",
+  "green",
+  "blue",
+  "yellow",
+  "white",
+];
+const WIRE_COLORS: readonly WireColor[] = [
+  "red",
+  "black",
+  "green",
+  "blue",
+  "yellow",
+];
 
 function isLedColor(v: unknown): v is LedColor {
   return typeof v === "string" && (LED_COLORS as readonly string[]).includes(v);
 }
 
 function isWireColor(v: unknown): v is WireColor {
-  return typeof v === "string" && (WIRE_COLORS as readonly string[]).includes(v);
+  return (
+    typeof v === "string" && (WIRE_COLORS as readonly string[]).includes(v)
+  );
 }
 
 function parseComponent(v: unknown, i: number): PlacedComponent {
   if (!isRecord(v)) fail(`component #${i + 1} is malformed`);
-  if (typeof v.id !== "string" || v.id.length === 0) fail(`component #${i + 1} has no id`);
+  if (typeof v.id !== "string" || v.id.length === 0)
+    fail(`component #${i + 1} has no id`);
   const id = v.id as PlacedComponent["id"];
   const holeA = asHoleId(v.holeA, `component #${i + 1} holeA`);
   const holeB = asHoleId(v.holeB, `component #${i + 1} holeB`);
@@ -80,7 +97,8 @@ function parseWireEnd(v: unknown, label: string): WireEnd {
     return { kind: "hole", hole: asHoleId(v.hole, label) };
   }
   if (v.kind === "battery") {
-    if (v.terminal !== "+" && v.terminal !== "-") fail(`${label} has a bad terminal`);
+    if (v.terminal !== "+" && v.terminal !== "-")
+      fail(`${label} has a bad terminal`);
     return { kind: "battery", terminal: v.terminal };
   }
   fail(`${label} has unknown kind`);
@@ -88,7 +106,8 @@ function parseWireEnd(v: unknown, label: string): WireEnd {
 
 function parseWire(v: unknown, i: number): Wire {
   if (!isRecord(v)) fail(`wire #${i + 1} is malformed`);
-  if (typeof v.id !== "string" || v.id.length === 0) fail(`wire #${i + 1} has no id`);
+  if (typeof v.id !== "string" || v.id.length === 0)
+    fail(`wire #${i + 1} has no id`);
   return {
     id: v.id as Wire["id"],
     a: parseWireEnd(v.a, `wire #${i + 1} end a`),
@@ -106,7 +125,8 @@ export function parseProject(json: string): Project {
     fail("File is not valid JSON");
   }
   if (!isRecord(raw)) fail("File is not a Diode project");
-  if (raw.version !== 1) fail(`Unsupported project version ${String(raw.version)}`);
+  if (raw.version !== 1)
+    fail(`Unsupported project version ${String(raw.version)}`);
   if (!isRecord(raw.battery)) fail("Project has no battery");
   const volts = asFiniteNumber(raw.battery.volts, "battery volts");
   if (!Array.isArray(raw.components)) fail("Project has no components list");
@@ -124,7 +144,10 @@ export function parseProject(json: string): Project {
 
   return {
     version: 1,
-    name: typeof raw.name === "string" && raw.name.trim() ? raw.name : "Imported circuit",
+    name:
+      typeof raw.name === "string" && raw.name.trim()
+        ? raw.name
+        : "Imported circuit",
     battery: { volts: Math.min(Math.max(volts, 0), 24) },
     components,
     wires,
@@ -132,7 +155,9 @@ export function parseProject(json: string): Project {
 }
 
 export function downloadProject(project: Project): void {
-  const blob = new Blob([serializeProject(project)], { type: "application/json" });
+  const blob = new Blob([serializeProject(project)], {
+    type: "application/json",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

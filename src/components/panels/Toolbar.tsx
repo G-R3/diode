@@ -20,7 +20,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Toggle } from "@/components/ui/toggle";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { downloadProject, pickProjectFile } from "@/lib/serialization";
 import type { Project } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
@@ -115,7 +119,10 @@ export function Toolbar() {
         Import
       </Button>
       {importError && (
-        <span className="max-w-64 truncate text-xs text-destructive" title={importError}>
+        <span
+          className="max-w-64 truncate text-xs text-destructive"
+          title={importError}
+        >
           {importError}
         </span>
       )}
@@ -132,8 +139,8 @@ export function Toolbar() {
           <DialogHeader>
             <DialogTitle>Clear the board?</DialogTitle>
             <DialogDescription>
-              This removes every component and wire. Export first if you want to keep
-              this circuit.
+              This removes every component and wire. Export first if you want to
+              keep this circuit.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -28,7 +28,11 @@ function RailStripes() {
   return (
     <>
       {stripes.map((s) => (
-        <mesh key={s.z} position={[0, 0.012, s.z]} rotation={[-Math.PI / 2, 0, 0]}>
+        <mesh
+          key={s.z}
+          position={[0, 0.012, s.z]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
           <planeGeometry args={[60, 0.18]} />
           <meshStandardMaterial color={s.color} roughness={0.8} />
         </mesh>
@@ -104,7 +108,10 @@ export function Breadboard() {
     }
   };
 
-  const holeGeometry = useMemo(() => new THREE.BoxGeometry(0.46, 0.1, 0.46), []);
+  const holeGeometry = useMemo(
+    () => new THREE.BoxGeometry(0.46, 0.1, 0.46),
+    [],
+  );
 
   return (
     <group>

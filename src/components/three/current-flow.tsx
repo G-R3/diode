@@ -29,7 +29,11 @@ function useFlowSegments(): FlowSegment[] {
         curve,
         current,
         length,
-        particles: THREE.MathUtils.clamp(Math.round(length / PARTICLE_SPACING), 2, 30),
+        particles: THREE.MathUtils.clamp(
+          Math.round(length / PARTICLE_SPACING),
+          2,
+          30,
+        ),
       });
     };
     for (const wire of wires) {

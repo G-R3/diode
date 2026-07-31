@@ -100,13 +100,13 @@ function drawMat(): HTMLCanvasElement {
     ctx.lineWidth = major ? 3 : 1.5;
     ctx.beginPath();
     for (let i = 1; i < colsCm; i++) {
-      if (i % 5 === 0 !== major) continue;
+      if ((i % 5 === 0) !== major) continue;
       const x = gx0 + i * cm;
       ctx.moveTo(x, gy0);
       ctx.lineTo(x, gy1);
     }
     for (let j = 1; j < rowsCm; j++) {
-      if (j % 5 === 0 !== major) continue;
+      if ((j % 5 === 0) !== major) continue;
       const y = gy0 + j * cm;
       ctx.moveTo(gx0, y);
       ctx.lineTo(gx1, y);

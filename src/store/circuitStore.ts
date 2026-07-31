@@ -127,7 +127,14 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
         component = { id, kind: "resistor", holeA, holeB, ohms: 220 };
         break;
       case "led":
-        component = { id, kind: "led", holeA, holeB, color: "red", vf: LED_DEFAULT_VF.red };
+        component = {
+          id,
+          kind: "led",
+          holeA,
+          holeB,
+          color: "red",
+          vf: LED_DEFAULT_VF.red,
+        };
         break;
       case "button":
         component = { id, kind: "button", holeA, holeB, pressed: false };

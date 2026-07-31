@@ -5,7 +5,11 @@ import {
   wireEndPosition,
   type Vec3,
 } from "@/lib/breadboard";
-import { isPlacementFree, occupiedHoles, placementTarget } from "@/lib/placement";
+import {
+  isPlacementFree,
+  occupiedHoles,
+  placementTarget,
+} from "@/lib/placement";
 import { useCircuitStore } from "@/store/circuitStore";
 import { arcCurve } from "./paths";
 import { WIRE_COLORS } from "@/lib/wireColors";

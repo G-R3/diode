@@ -1,14 +1,14 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useCircuitStore } from "@/store/circuitStore";
-import { BatteryModel } from "./BatteryModel";
-import { Breadboard } from "./Breadboard";
-import { ComponentModel } from "./ComponentModel";
-import { CurrentFlow } from "./CurrentFlow";
-import { GhostPreview } from "./GhostPreview";
-import { Labels } from "./Labels";
-import { WireModel } from "./WireModel";
-import { WorkspaceMat } from "./WorkspaceMat";
+import { BatteryModel } from "./battery-model";
+import { Breadboard } from "./breadboard";
+import { ComponentModel } from "./component-model";
+import { CurrentFlow } from "./current-flow";
+import { GhostPreview } from "./ghost-preview";
+import { Labels } from "./labels";
+import { WireModel } from "./wire-model";
+import { WorkspaceMat } from "./workspace-mat";
 
 export function SceneCanvas() {
   const components = useCircuitStore((s) => s.components);

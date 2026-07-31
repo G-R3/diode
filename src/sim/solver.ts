@@ -115,7 +115,9 @@ function gaussSolve(a: number[][], b: number[]): number[] | null {
 function solvePass(net: Netlist, ledOn: Map<ComponentId, boolean>): number[] {
   const n = net.nodeCount - 1; // unknowns exclude ground
   if (n <= 0) return [0];
-  const a: number[][] = Array.from({ length: n }, () => new Array<number>(n).fill(0));
+  const a: number[][] = Array.from({ length: n }, () =>
+    new Array<number>(n).fill(0),
+  );
   const b = new Array<number>(n).fill(0);
 
   function stampConductance(n1: number, n2: number, g: number) {
@@ -173,7 +175,11 @@ function solvePass(net: Netlist, ledOn: Map<ComponentId, boolean>): number[] {
   return v;
 }
 
-function branchCurrent(br: Branch, v: number[], ledOn: Map<ComponentId, boolean>): number {
+function branchCurrent(
+  br: Branch,
+  v: number[],
+  ledOn: Map<ComponentId, boolean>,
+): number {
   const vd = v[br.n1] - v[br.n2];
   switch (br.kind) {
     case "battery":
@@ -211,7 +217,11 @@ function inBatteryLoop(net: Netlist, br: Branch): boolean {
     while (queue.length > 0) {
       const node = queue.pop()!;
       for (const other of net.branches) {
-        if (other === br || other.kind === "battery" || !isTopologicalConductor(other)) {
+        if (
+          other === br ||
+          other.kind === "battery" ||
+          !isTopologicalConductor(other)
+        ) {
           continue;
         }
         const next =
@@ -331,7 +341,12 @@ export function solveCircuit(
       } else if (conducting) {
         status = "ok";
       } else {
-        status = br.n1 === br.n2 ? "bypassed" : inBatteryLoop(net, br) ? "off" : "no-path";
+        status =
+          br.n1 === br.n2
+            ? "bypassed"
+            : inBatteryLoop(net, br)
+              ? "off"
+              : "no-path";
       }
     } else {
       if (conducting) {
@@ -348,7 +363,8 @@ export function solveCircuit(
         status = "no-path";
         warnings.push({
           severity: "warning",
-          message: "Resistor is not part of a complete loop back to the battery.",
+          message:
+            "Resistor is not part of a complete loop back to the battery.",
           componentId: br.id,
         });
       } else {

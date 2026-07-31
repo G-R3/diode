@@ -49,7 +49,12 @@ function TerminalPost({ terminal }: { terminal: BatteryTerminal }) {
         <sphereGeometry args={[0.34, 12, 8]} />
         <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
       </mesh>
-      <Html position={[0, y + 0.7, 0]} center distanceFactor={28} zIndexRange={[10, 0]}>
+      <Html
+        position={[0, y + 0.7, 0]}
+        center
+        distanceFactor={28}
+        zIndexRange={[10, 0]}
+      >
         <div
           className={`select-none rounded-full px-1.5 text-xs font-bold text-white ${
             terminal === "+" ? "bg-red-600" : "bg-zinc-700"
@@ -81,7 +86,11 @@ export function BatteryModel() {
     <group position={[cx, TABLE_Y + h / 2, cz]}>
       <mesh onClick={onClick}>
         <boxGeometry args={[w, h, d]} />
-        <meshStandardMaterial color="#18181b" roughness={0.5} {...highlightProps(highlight)} />
+        <meshStandardMaterial
+          color="#18181b"
+          roughness={0.5}
+          {...highlightProps(highlight)}
+        />
       </mesh>
       {/* Label face */}
       <Html
@@ -93,7 +102,9 @@ export function BatteryModel() {
       >
         <div className="pointer-events-none select-none rounded bg-zinc-800 px-2 py-0.5 text-center font-mono text-[10px] leading-tight text-amber-300">
           {volts}V
-          <div className="text-[6px] uppercase tracking-widest text-zinc-400">battery</div>
+          <div className="text-[6px] uppercase tracking-widest text-zinc-400">
+            battery
+          </div>
         </div>
       </Html>
       <group position={[-cx, -(TABLE_Y + h / 2), -cz]}>
