@@ -33,9 +33,9 @@ export type ComponentKind = "resistor" | "led" | "button";
 
 interface ComponentBase {
   id: ComponentId;
-  /** First terminal. For LEDs this is the anode (+). */
+  /** First terminal (placement anchor). For LEDs this is the cathode (−). */
   holeA: HoleId;
-  /** Second terminal. For LEDs this is the cathode (-). */
+  /** Second terminal (placement far end). For LEDs this is the anode (+). */
   holeB: HoleId;
 }
 

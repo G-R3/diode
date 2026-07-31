@@ -31,8 +31,22 @@ export type Branch =
   | { kind: "battery"; volts: number; r: number; n1: number; n2: number }
   | { kind: "wire"; id: WireId; r: number; n1: number; n2: number }
   | { kind: "resistor"; id: ComponentId; r: number; n1: number; n2: number }
-  | { kind: "led"; id: ComponentId; vf: number; rd: number; n1: number; n2: number }
-  | { kind: "button"; id: ComponentId; closed: boolean; r: number; n1: number; n2: number };
+  | {
+      kind: "led";
+      id: ComponentId;
+      vf: number;
+      rd: number;
+      n1: number;
+      n2: number;
+    }
+  | {
+      kind: "button";
+      id: ComponentId;
+      closed: boolean;
+      r: number;
+      n1: number;
+      n2: number;
+    };
 
 export interface Netlist {
   /** Total node count. Node 0 is ground (battery minus). */
@@ -83,14 +97,28 @@ export function buildNetlist(
   }
 
   for (const comp of components) {
-    const n1 = nodeOfHole(comp.holeA);
-    const n2 = nodeOfHole(comp.holeB);
+    const nodeA = nodeOfHole(comp.holeA);
+    const nodeB = nodeOfHole(comp.holeB);
     switch (comp.kind) {
       case "resistor":
-        branches.push({ kind: "resistor", id: comp.id, r: comp.ohms, n1, n2 });
+        branches.push({
+          kind: "resistor",
+          id: comp.id,
+          r: comp.ohms,
+          n1: nodeA,
+          n2: nodeB,
+        });
         break;
       case "led":
-        branches.push({ kind: "led", id: comp.id, vf: comp.vf, rd: LED_RD, n1, n2 });
+        // Conducts anode (+) → cathode (−) = holeB → holeA.
+        branches.push({
+          kind: "led",
+          id: comp.id,
+          vf: comp.vf,
+          rd: LED_RD,
+          n1: nodeB,
+          n2: nodeA,
+        });
         break;
       case "button":
         branches.push({
@@ -98,8 +126,8 @@ export function buildNetlist(
           id: comp.id,
           closed: comp.pressed,
           r: BUTTON_R,
-          n1,
-          n2,
+          n1: nodeA,
+          n2: nodeB,
         });
         break;
       default: {

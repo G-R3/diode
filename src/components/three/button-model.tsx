@@ -12,7 +12,13 @@ interface ButtonModelProps {
   onPress: (down: boolean) => void;
 }
 
-export function ButtonModel({ a, b, pressed, highlight, onPress }: ButtonModelProps) {
+export function ButtonModel({
+  a,
+  b,
+  pressed,
+  highlight,
+  onPress,
+}: ButtonModelProps) {
   const { mid, angle, baseLen } = useMemo(() => {
     const dx = b[0] - a[0];
     const dz = b[2] - a[2];
@@ -34,12 +40,26 @@ export function ButtonModel({ a, b, pressed, highlight, onPress }: ButtonModelPr
 
   return (
     <group>
-      <Cyl from={a} to={[mid[0] - 0.5, 0.35, mid[2]]} radius={0.08} color="#b9bdc4" />
-      <Cyl from={b} to={[mid[0] + 0.5, 0.35, mid[2]]} radius={0.08} color="#b9bdc4" />
+      <Cyl
+        from={a}
+        to={[mid[0] - 0.5, 0.35, mid[2]]}
+        radius={0.08}
+        color="#b9bdc4"
+      />
+      <Cyl
+        from={b}
+        to={[mid[0] + 0.5, 0.35, mid[2]]}
+        radius={0.08}
+        color="#b9bdc4"
+      />
       <group position={[mid[0], 0, mid[2]]} rotation={[0, angle, 0]}>
         <mesh position={[0, 0.4, 0]}>
           <boxGeometry args={[baseLen, 0.7, 1.9]} />
-          <meshStandardMaterial color="#3f3f46" roughness={0.6} {...highlightProps(highlight)} />
+          <meshStandardMaterial
+            color="#3f3f46"
+            roughness={0.6}
+            {...highlightProps(highlight)}
+          />
         </mesh>
         <mesh
           position={[0, capY, 0]}

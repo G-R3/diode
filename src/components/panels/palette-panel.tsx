@@ -1,7 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import { Lightbulb, MousePointer2, Omega, Power, Spline } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { ComponentKind, WireColor } from "@/lib/types";
 import { useCircuitStore, type Tool } from "@/store/circuitStore";
 import { WIRE_COLORS } from "@/lib/wireColors";
@@ -12,7 +16,13 @@ const COMPONENTS: { kind: ComponentKind; label: string; icon: LucideIcon }[] = [
   { kind: "button", label: "Push button", icon: Power },
 ];
 
-const WIRE_COLOR_ORDER: WireColor[] = ["red", "black", "green", "blue", "yellow"];
+const WIRE_COLOR_ORDER: WireColor[] = [
+  "red",
+  "black",
+  "green",
+  "blue",
+  "yellow",
+];
 
 function ToolButton({
   active,

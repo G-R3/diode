@@ -35,11 +35,13 @@ export function StatusBar() {
     tone = "text-emerald-600";
   } else {
     icon = <Info className="size-3.5 shrink-0" />;
-    text = "No current flowing. Close the loop from battery + back to battery -.";
+    text =
+      "No current flowing. Close the loop from battery + back to battery -.";
     tone = "text-muted-foreground";
   }
 
-  const extra = sim.warnings.length > 1 ? ` (+${sim.warnings.length - 1} more)` : "";
+  const extra =
+    sim.warnings.length > 1 ? ` (+${sim.warnings.length - 1} more)` : "";
 
   return (
     <footer

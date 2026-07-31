@@ -1,8 +1,8 @@
-import { InspectorPanel } from "@/components/panels/InspectorPanel";
-import { PalettePanel } from "@/components/panels/PalettePanel";
-import { StatusBar } from "@/components/panels/StatusBar";
-import { Toolbar } from "@/components/panels/Toolbar";
-import { SceneCanvas } from "@/components/three/SceneCanvas";
+import { InspectorPanel } from "@/components/panels/inspector-panel";
+import { PalettePanel } from "@/components/panels/palette-panel";
+import { StatusBar } from "@/components/panels/status-bar";
+import { Toolbar } from "@/components/panels/toolbar";
+import { SceneCanvas } from "@/components/three/scene-canvas";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 

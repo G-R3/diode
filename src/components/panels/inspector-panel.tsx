@@ -16,9 +16,17 @@ import type { LedColor, PlacedComponent, Wire, WireColor } from "@/lib/types";
 import type { ComponentReading, ComponentStatus } from "@/sim/solver";
 import { useCircuitStore } from "@/store/circuitStore";
 
-const E12_PRESETS = [47, 100, 220, 330, 470, 680, 1000, 2200, 4700, 10000, 47000, 100000];
+const E12_PRESETS = [
+  47, 100, 220, 330, 470, 680, 1000, 2200, 4700, 10000, 47000, 100000,
+];
 const LED_COLORS: LedColor[] = ["red", "yellow", "green", "blue", "white"];
-const WIRE_COLOR_ORDER: WireColor[] = ["red", "black", "green", "blue", "yellow"];
+const WIRE_COLOR_ORDER: WireColor[] = [
+  "red",
+  "black",
+  "green",
+  "blue",
+  "yellow",
+];
 
 const STATUS_TEXT: Record<ComponentStatus, string> = {
   ok: "Conducting",
@@ -30,11 +38,21 @@ const STATUS_TEXT: Record<ComponentStatus, string> = {
   open: "Open (not pressed)",
 };
 
-function Row({ label, value, alert }: { label: string; value: string; alert?: boolean }) {
+function Row({
+  label,
+  value,
+  alert,
+}: {
+  label: string;
+  value: string;
+  alert?: boolean;
+}) {
   return (
     <div className="flex items-baseline justify-between gap-2 text-xs">
       <span className="text-muted-foreground">{label}</span>
-      <span className={`font-mono ${alert ? "font-semibold text-destructive" : ""}`}>
+      <span
+        className={`font-mono ${alert ? "font-semibold text-destructive" : ""}`}
+      >
         {value}
       </span>
     </div>
@@ -44,7 +62,9 @@ function Row({ label, value, alert }: { label: string; value: string; alert?: bo
 function Readings({ reading }: { reading: ComponentReading | undefined }) {
   if (!reading) return null;
   const alert =
-    reading.status !== "ok" && reading.status !== "off" && reading.status !== "open";
+    reading.status !== "ok" &&
+    reading.status !== "off" &&
+    reading.status !== "open";
   return (
     <div className="space-y-1 rounded-md bg-muted/60 p-2">
       <Row label="Status" value={STATUS_TEXT[reading.status]} alert={alert} />
@@ -54,7 +74,11 @@ function Readings({ reading }: { reading: ComponentReading | undefined }) {
   );
 }
 
-function ResistorInspector({ comp }: { comp: PlacedComponent & { kind: "resistor" } }) {
+function ResistorInspector({
+  comp,
+}: {
+  comp: PlacedComponent & { kind: "resistor" };
+}) {
   const setResistorOhms = useCircuitStore((s) => s.setResistorOhms);
   const reading = useCircuitStore((s) => s.sim.components.get(comp.id));
   return (
@@ -63,7 +87,9 @@ function ResistorInspector({ comp }: { comp: PlacedComponent & { kind: "resistor
         <Label className="text-xs">Resistance</Label>
         <div className="flex gap-1.5">
           <Select
-            value={E12_PRESETS.includes(comp.ohms) ? String(comp.ohms) : undefined}
+            value={
+              E12_PRESETS.includes(comp.ohms) ? String(comp.ohms) : undefined
+            }
             onValueChange={(v) => v && setResistorOhms(comp.id, Number(v))}
           >
             <SelectTrigger size="sm" className="w-24">
@@ -135,20 +161,27 @@ function LedInspector({ comp }: { comp: PlacedComponent & { kind: "led" } }) {
         />
       </div>
       {reading && reading.brightness > 0 && (
-        <Row label="Brightness" value={`${Math.round(reading.brightness * 100)}%`} />
+        <Row
+          label="Brightness"
+          value={`${Math.round(reading.brightness * 100)}%`}
+        />
       )}
       <Readings reading={reading} />
     </div>
   );
 }
 
-function ButtonInspector({ comp }: { comp: PlacedComponent & { kind: "button" } }) {
+function ButtonInspector({
+  comp,
+}: {
+  comp: PlacedComponent & { kind: "button" };
+}) {
   const reading = useCircuitStore((s) => s.sim.components.get(comp.id));
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Momentary push button. Press and hold the red cap in the scene to close the
-        circuit.
+        Momentary push button. Press and hold the red cap in the scene to close
+        the circuit.
       </p>
       <Readings reading={reading} />
     </div>
@@ -170,7 +203,9 @@ function WireInspector({ wire }: { wire: Wire }) {
               aria-label={`${color} wire`}
               onClick={() => setWireColor(wire.id, color)}
               className={`size-5 rounded-full border-2 ${
-                wire.color === color ? "border-foreground" : "border-transparent"
+                wire.color === color
+                  ? "border-foreground"
+                  : "border-transparent"
               }`}
               style={{ backgroundColor: WIRE_COLORS[color] }}
             />
