@@ -103,7 +103,9 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
   rotatePlacement: () =>
     set((s) => {
       if (s.tool.kind !== "place") return s;
-      return { tool: { ...s.tool, dir: (((s.tool.dir as number) + 1) % 4) as Dir } };
+      return {
+        tool: { ...s.tool, dir: (((s.tool.dir as number) + 1) % 4) as Dir },
+      };
     }),
 
   setHoverHole: (hoverHole) =>
@@ -125,7 +127,14 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
         component = { id, kind: "resistor", holeA, holeB, ohms: 220 };
         break;
       case "led":
-        component = { id, kind: "led", holeA, holeB, color: "red", vf: LED_DEFAULT_VF.red };
+        component = {
+          id,
+          kind: "led",
+          holeA,
+          holeB,
+          color: "red",
+          vf: LED_DEFAULT_VF.red,
+        };
         break;
       case "button":
         component = { id, kind: "button", holeA, holeB, pressed: false };
@@ -147,7 +156,10 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
     const s = get();
     if (s.tool.kind !== "wire") return;
 
-    if (end.kind === "hole" && occupiedHoles(s.components, s.wires).has(end.hole)) {
+    if (
+      end.kind === "hole" &&
+      occupiedHoles(s.components, s.wires).has(end.hole)
+    ) {
       return;
     }
 
@@ -158,7 +170,9 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
 
     const start = s.wireStart;
     const samePoint =
-      (start.kind === "hole" && end.kind === "hole" && start.hole === end.hole) ||
+      (start.kind === "hole" &&
+        end.kind === "hole" &&
+        start.hole === end.hole) ||
       (start.kind === "battery" &&
         end.kind === "battery" &&
         start.terminal === end.terminal);

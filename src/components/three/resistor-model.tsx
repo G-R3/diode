@@ -63,11 +63,25 @@ export function ResistorModel({ a, b, ohms, highlight }: ResistorModelProps) {
 
   return (
     <group>
-      <Cyl from={a} to={[endA.x, endA.y, endA.z]} radius={0.09} color="#b9bdc4" />
-      <Cyl from={b} to={[endB.x, endB.y, endB.z]} radius={0.09} color="#b9bdc4" />
+      <Cyl
+        from={a}
+        to={[endA.x, endA.y, endA.z]}
+        radius={0.09}
+        color="#b9bdc4"
+      />
+      <Cyl
+        from={b}
+        to={[endB.x, endB.y, endB.z]}
+        radius={0.09}
+        color="#b9bdc4"
+      />
       <mesh position={mid} quaternion={quaternion}>
         <cylinderGeometry args={[0.34, 0.34, bodyLen, 16]} />
-        <meshStandardMaterial color="#e8d5a3" roughness={0.6} {...highlightProps(highlight)} />
+        <meshStandardMaterial
+          color="#e8d5a3"
+          roughness={0.6}
+          {...highlightProps(highlight)}
+        />
       </mesh>
       {bandOffsets.map((p, i) => (
         <mesh key={i} position={p} quaternion={quaternion} raycast={() => null}>

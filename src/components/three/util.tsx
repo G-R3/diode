@@ -33,7 +33,10 @@ export function Cyl({
     const length = Math.max(dir.length(), 1e-4);
     return {
       position: f.clone().add(t).multiplyScalar(0.5),
-      quaternion: new THREE.Quaternion().setFromUnitVectors(UP, dir.normalize()),
+      quaternion: new THREE.Quaternion().setFromUnitVectors(
+        UP,
+        dir.normalize(),
+      ),
       length,
     };
   }, [from, to]);

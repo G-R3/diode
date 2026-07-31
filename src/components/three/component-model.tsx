@@ -2,10 +2,10 @@ import type { ThreeEvent } from "@react-three/fiber";
 import type { PlacedComponent } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
 import type { ComponentStatus } from "@/sim/solver";
-import { ButtonModel } from "./ButtonModel";
-import { LedModel } from "./LedModel";
+import { ButtonModel } from "./button-model";
+import { LedModel } from "./led-model";
 import { componentEndpoints } from "./paths";
-import { ResistorModel } from "./ResistorModel";
+import { ResistorModel } from "./resistor-model";
 import type { Highlight } from "./highlight";
 
 const WARNING_STATUSES: ReadonlySet<ComponentStatus> = new Set([

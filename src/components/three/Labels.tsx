@@ -120,7 +120,12 @@ export function Labels() {
       )}
       {showCurrent &&
         currentLabels.map(({ key, position, amps }) => (
-          <Chip key={key} position={position} text={formatAmps(amps)} tone="current" />
+          <Chip
+            key={key}
+            position={position}
+            text={formatAmps(amps)}
+            tone="current"
+          />
         ))}
     </group>
   );
