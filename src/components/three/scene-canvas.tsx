@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { useCircuitStore } from "@/store/circuitStore";
@@ -29,7 +30,9 @@ export function SceneCanvas() {
       <directionalLight position={[-14, 18, -10]} intensity={0.55} />
 
       <WorkspaceMat />
-      <Breadboard />
+      <Suspense fallback={null}>
+        <Breadboard />
+      </Suspense>
       <BatteryModel />
       {components.map((comp) => (
         <ComponentModel key={comp.id} comp={comp} />
