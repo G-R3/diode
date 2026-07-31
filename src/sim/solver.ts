@@ -33,9 +33,15 @@ export type ComponentStatus =
   | "open";
 
 export interface ComponentReading {
-  /** Amps, signed from holeA to holeB. */
+  /**
+   * Amps along the branch: holeA→holeB for resistors/buttons,
+   * anode→cathode (holeB→holeA) for LEDs.
+   */
   current: number;
-  /** V(holeA) - V(holeB). */
+  /**
+   * Voltage along the branch: V(holeA)−V(holeB) for resistors/buttons,
+   * V(anode)−V(cathode) for LEDs.
+   */
   voltageDrop: number;
   status: ComponentStatus;
   /** 0..1, LEDs only. */

@@ -21,8 +21,8 @@ const LED_GLOW: Record<LedColor, string> = {
 };
 
 interface LedModelProps {
-  a: Vec3; // anode
-  b: Vec3; // cathode
+  a: Vec3; // cathode (−)
+  b: Vec3; // anode (+)
   color: LedColor;
   /** 0..1 from the simulation. */
   brightness: number;
