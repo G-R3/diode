@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
+import { useMemo } from "react";
 import type { Wire } from "@/lib/types";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";

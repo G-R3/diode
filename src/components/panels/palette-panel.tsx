@@ -7,8 +7,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { ComponentKind, WireColor } from "@/lib/types";
-import { useCircuitStore, type Tool } from "@/store/circuitStore";
 import { WIRE_COLORS } from "@/lib/wireColors";
+import { type Tool, useCircuitStore } from "@/store/circuitStore";
 
 const COMPONENTS: { kind: ComponentKind; label: string; icon: LucideIcon }[] = [
   { kind: "resistor", label: "Resistor", icon: Omega },

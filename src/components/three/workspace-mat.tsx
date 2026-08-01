@@ -1,6 +1,6 @@
+import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
 import { TABLE_Y } from "@/lib/breadboard";
 
 /**

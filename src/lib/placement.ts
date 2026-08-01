@@ -1,4 +1,4 @@
-import { holeId, offsetHole, type Dir } from "./breadboard";
+import { type Dir, holeId, offsetHole } from "./breadboard";
 import type {
   ComponentKind,
   Hole,

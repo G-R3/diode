@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import {
-  parseHoleId,
-  wireEndPosition,
   holePosition,
+  parseHoleId,
   type Vec3,
+  wireEndPosition,
 } from "@/lib/breadboard";
 import type { PlacedComponent, Wire } from "@/lib/types";
 

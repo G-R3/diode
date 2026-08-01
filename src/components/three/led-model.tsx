@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import type { Vec3 } from "@/lib/breadboard";
 import type { LedColor } from "@/lib/types";
-import { Cyl } from "./util";
 import { HIGHLIGHT_EMISSIVE, type Highlight } from "./highlight";
+import { Cyl } from "./util";
 
 const LED_TINT: Record<LedColor, string> = {
   red: "#ef4444",

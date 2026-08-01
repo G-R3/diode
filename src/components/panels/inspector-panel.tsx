@@ -10,9 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { WIRE_COLORS } from "@/lib/wireColors";
 import { formatAmps, formatOhms, formatVolts } from "@/lib/format";
 import type { LedColor, PlacedComponent, Wire, WireColor } from "@/lib/types";
+import { WIRE_COLORS } from "@/lib/wireColors";
 import type { ComponentReading, ComponentStatus } from "@/sim/solver";
 import { useCircuitStore } from "@/store/circuitStore";
 

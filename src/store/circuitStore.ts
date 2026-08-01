@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { holeId, type Dir } from "@/lib/breadboard";
+import { type Dir, holeId } from "@/lib/breadboard";
 import {
   COMPONENT_SPAN,
   isPlacementFree,
@@ -7,15 +7,15 @@ import {
   placementTarget,
 } from "@/lib/placement";
 import {
-  LED_DEFAULT_VF,
-  newComponentId,
-  newWireId,
   type Battery,
   type ComponentId,
   type ComponentKind,
   type Hole,
   type HoleId,
+  LED_DEFAULT_VF,
   type LedColor,
+  newComponentId,
+  newWireId,
   type PlacedComponent,
   type Project,
   type Wire,
@@ -23,7 +23,7 @@ import {
   type WireEnd,
   type WireId,
 } from "@/lib/types";
-import { EMPTY_SIM, solveCircuit, type SimResult } from "@/sim/solver";
+import { EMPTY_SIM, type SimResult, solveCircuit } from "@/sim/solver";
 
 export type Tool =
   | { kind: "select" }

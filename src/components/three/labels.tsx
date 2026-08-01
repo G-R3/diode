@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import { Html } from "@react-three/drei";
+import { useMemo } from "react";
 import {
   batteryTerminalPosition,
   holePosition,

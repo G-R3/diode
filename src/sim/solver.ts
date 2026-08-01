@@ -6,7 +6,7 @@ import type {
   Wire,
   WireId,
 } from "@/lib/types";
-import { buildNetlist, LEAK_G, type Branch, type Netlist } from "./netlist";
+import { type Branch, buildNetlist, LEAK_G, type Netlist } from "./netlist";
 
 /** Above this, the battery is considered short-circuited. */
 const SHORT_CURRENT = 1.0;

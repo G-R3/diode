@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import type { Vec3 } from "@/lib/breadboard";
-import { highlightProps, type Highlight } from "./highlight";
+import { type Highlight, highlightProps } from "./highlight";
 import { Cyl } from "./util";
 
 const BAND_COLORS = [

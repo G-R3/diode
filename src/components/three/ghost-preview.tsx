@@ -2,17 +2,17 @@ import { useMemo } from "react";
 import {
   holePosition,
   parseHoleId,
-  wireEndPosition,
   type Vec3,
+  wireEndPosition,
 } from "@/lib/breadboard";
 import {
   isPlacementFree,
   occupiedHoles,
   placementTarget,
 } from "@/lib/placement";
+import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
 import { arcCurve } from "./paths";
-import { WIRE_COLORS } from "@/lib/wireColors";
 
 const VALID_COLOR = "#22c55e";
 const INVALID_COLOR = "#ef4444";

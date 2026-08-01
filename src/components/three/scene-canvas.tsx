@@ -1,6 +1,6 @@
-import { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { Suspense } from "react";
 import { useCircuitStore } from "@/store/circuitStore";
 import { BatteryModel } from "./battery-model";
 import { Breadboard } from "./breadboard";

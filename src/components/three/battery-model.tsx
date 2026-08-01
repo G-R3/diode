@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Html } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
+import { useState } from "react";
 import {
   BATTERY_CENTER,
   BATTERY_SIZE,
@@ -9,7 +9,7 @@ import {
 } from "@/lib/breadboard";
 import type { BatteryTerminal } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
-import { highlightProps, type Highlight } from "./highlight";
+import { type Highlight, highlightProps } from "./highlight";
 
 function TerminalPost({ terminal }: { terminal: BatteryTerminal }) {
   const wireClick = useCircuitStore((s) => s.wireClick);
