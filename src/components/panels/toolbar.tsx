@@ -2,7 +2,7 @@ import {
   Activity,
   CircuitBoard,
   Download,
-  Github,
+  GitBranch,
   Trash2,
   Upload,
   Zap,
@@ -84,7 +84,7 @@ export function Toolbar() {
         aria-label="Open Diode's GitHub repository in a new tab"
         className="flex size-8 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
       >
-        <Github className="size-3.5" aria-hidden="true" />
+        <GitBranch className="size-3.5" aria-hidden="true" />
       </a>
       <div className="flex-1" />
       <Tooltip>
