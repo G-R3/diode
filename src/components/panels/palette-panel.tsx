@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Lightbulb, MousePointer2, Omega, Power, Spline } from "lucide-react";
+import { MousePointer2, Power, Spline } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -10,9 +10,14 @@ import type { ComponentKind, WireColor } from "@/lib/types";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { type Tool, useCircuitStore } from "@/store/circuitStore";
 
-const COMPONENTS: { kind: ComponentKind; label: string; icon: LucideIcon }[] = [
-  { kind: "resistor", label: "Resistor", icon: Omega },
-  { kind: "led", label: "LED", icon: Lightbulb },
+const COMPONENTS: {
+  kind: ComponentKind;
+  label: string;
+  icon?: LucideIcon;
+  thumbnail?: string;
+}[] = [
+  { kind: "resistor", label: "Resistor", thumbnail: "/parts/resistor.svg" },
+  { kind: "led", label: "LED", thumbnail: "/parts/led.svg" },
   { kind: "button", label: "Push button", icon: Power },
 ];
 
@@ -27,12 +32,18 @@ const WIRE_COLOR_ORDER: WireColor[] = [
 function ToolButton({
   active,
   label,
+  displayLabel,
   icon: Icon,
+  thumbnail,
+  expanded = false,
   onClick,
 }: {
   active: boolean;
   label: string;
-  icon: LucideIcon;
+  displayLabel?: string;
+  icon?: LucideIcon;
+  thumbnail?: string;
+  expanded?: boolean;
   onClick: () => void;
 }) {
   return (
@@ -41,12 +52,30 @@ function ToolButton({
         render={
           <Button
             variant={active ? "default" : "ghost"}
-            size="icon"
+            size={expanded ? "default" : "icon"}
             onClick={onClick}
             aria-label={label}
             aria-pressed={active}
+            className={
+              expanded ? "h-12 w-full justify-start gap-3 px-2" : undefined
+            }
           >
-            <Icon className="size-4" />
+            {thumbnail ? (
+              <span className="grid size-8 shrink-0 place-items-center rounded-md">
+                <img
+                  src={thumbnail}
+                  alt=""
+                  className="max-h-6 max-w-6 object-contain"
+                />
+              </span>
+            ) : Icon ? (
+              <Icon className="size-4" />
+            ) : null}
+            {expanded && (
+              <span className="text-sm font-medium">
+                {displayLabel ?? label}
+              </span>
+            )}
           </Button>
         }
       />
@@ -73,12 +102,14 @@ export function PalettePanel() {
         onClick={() => pick({ kind: "select" })}
       />
       <div className="my-0.5 h-px w-6 bg-border" />
-      {COMPONENTS.map(({ kind, label, icon }) => (
+      {COMPONENTS.map(({ kind, label, icon, thumbnail }) => (
         <ToolButton
           key={kind}
           active={isPlace(kind)}
           label={`${label} — click the board to place, R rotates`}
+          displayLabel={label}
           icon={icon}
+          thumbnail={thumbnail}
           onClick={() => pick({ kind: "place", component: kind, dir: 0 })}
         />
       ))}
