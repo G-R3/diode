@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import type { Vec3 } from "@/lib/breadboard";
-import type { LedColor } from "@/lib/types";
+import type { LedColor, Vec3 } from "@/lib/types";
 import { HIGHLIGHT_EMISSIVE, type Highlight } from "./highlight";
 import { Cyl } from "./util";
 

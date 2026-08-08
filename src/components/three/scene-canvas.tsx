@@ -1,7 +1,9 @@
 import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
+import type { Wire } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
+import { useBatteryAsset } from "./battery-asset";
 import { BatteryModel } from "./battery-model";
 import { Breadboard } from "./breadboard";
 import { ComponentModel } from "./component-model";
@@ -10,6 +12,27 @@ import { GhostPreview } from "./ghost-preview";
 import { Labels } from "./labels";
 import { WireModel } from "./wire-model";
 import { WorkspaceMat } from "./workspace-mat";
+
+function LoadedCircuitScene({ wires }: { wires: Wire[] }) {
+  const battery = useBatteryAsset();
+
+  return (
+    <>
+      <Breadboard />
+      <BatteryModel asset={battery} />
+      {wires.map((wire) => (
+        <WireModel
+          key={wire.id}
+          wire={wire}
+          batteryTerminals={battery.terminals}
+        />
+      ))}
+      <GhostPreview batteryTerminals={battery.terminals} />
+      <CurrentFlow batteryTerminals={battery.terminals} />
+      <Labels batteryTerminals={battery.terminals} />
+    </>
+  );
+}
 
 export function SceneCanvas() {
   const components = useCircuitStore((s) => s.components);
@@ -31,18 +54,11 @@ export function SceneCanvas() {
 
       <WorkspaceMat />
       <Suspense fallback={null}>
-        <Breadboard />
+        <LoadedCircuitScene wires={wires} />
       </Suspense>
-      <BatteryModel />
       {components.map((comp) => (
         <ComponentModel key={comp.id} comp={comp} />
       ))}
-      {wires.map((wire) => (
-        <WireModel key={wire.id} wire={wire} />
-      ))}
-      <GhostPreview />
-      <CurrentFlow />
-      <Labels />
 
       <OrbitControls
         makeDefault

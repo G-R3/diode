@@ -1,14 +1,8 @@
 import { Html } from "@react-three/drei";
 import { useMemo } from "react";
-import {
-  batteryTerminalPosition,
-  holePosition,
-  parseHoleId,
-  stripOfHole,
-  type Vec3,
-} from "@/lib/breadboard";
+import { holePosition, parseHoleId, stripOfHole } from "@/lib/breadboard";
 import { formatAmps, formatVolts } from "@/lib/format";
-import type { StripId } from "@/lib/types";
+import type { BatteryTerminalPositions, StripId, Vec3 } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
 import { componentEndpoints, wireCurve } from "./paths";
 
@@ -37,7 +31,11 @@ function Chip({
 }
 
 /** Voltage chips on every used strip, current chips on every conducting branch. */
-export function Labels() {
+export function Labels({
+  batteryTerminals,
+}: {
+  batteryTerminals: BatteryTerminalPositions;
+}) {
   const components = useCircuitStore((s) => s.components);
   const wires = useCircuitStore((s) => s.wires);
   const sim = useCircuitStore((s) => s.sim);
@@ -78,7 +76,7 @@ export function Labels() {
     for (const wire of wires) {
       const amps = sim.wireCurrent.get(wire.id) ?? 0;
       if (Math.abs(amps) < 1e-6) continue;
-      const p = wireCurve(wire).getPointAt(0.5);
+      const p = wireCurve(wire, batteryTerminals).getPointAt(0.5);
       labels.push({ key: wire.id, position: [p.x, p.y + 0.5, p.z], amps });
     }
     for (const comp of components) {
@@ -92,9 +90,9 @@ export function Labels() {
       });
     }
     return labels;
-  }, [components, wires, sim]);
+  }, [batteryTerminals, components, wires, sim]);
 
-  const plusPost = batteryTerminalPosition("+");
+  const plusPost = batteryTerminals["+"];
 
   return (
     <group>

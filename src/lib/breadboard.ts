@@ -1,11 +1,5 @@
-import type {
-  BatteryTerminal,
-  Hole,
-  HoleId,
-  RailId,
-  StripId,
-  WireEnd,
-} from "./types";
+import type { Hole, HoleId, RailId, StripId, Vec3 } from "./types";
+import { WORK_SURFACE_Y } from "./workspace";
 
 /**
  * Geometry of a standard 830-point breadboard, in world units of one hole
@@ -36,7 +30,7 @@ const RAIL_Z: Record<RailId, number> = {
 
 export const BOARD_WIDTH = 66;
 export const BOARD_DEPTH = 19.6;
-export const BOARD_THICKNESS = 1.4;
+export const BOARD_THICKNESS = -WORK_SURFACE_Y;
 
 /** z for a main-grid row (0..9). Rows straddle the center channel at z=0. */
 function mainRowZ(row: number): number {
@@ -99,8 +93,6 @@ export function stripOfHole(hole: Hole): StripId {
   const half = hole.index < RAIL_HOLES / 2 ? "L" : "R";
   return `s:r:${hole.rail}:${half}` as StripId;
 }
-
-export type Vec3 = readonly [number, number, number];
 
 export function holePosition(hole: Hole): Vec3 {
   if (hole.kind === "main") {
@@ -168,28 +160,6 @@ export function offsetHole(hole: Hole, dir: Dir, n: number): Hole | null {
   const index = hole.index + sign * n;
   if (index < 0 || index >= RAIL_HOLES) return null;
   return { kind: "rail", rail: hole.rail, index };
-}
-
-/* ------------------------------- battery ------------------------------- */
-
-export const BATTERY_CENTER: Vec3 = [-24, 0, -13.5];
-export const BATTERY_SIZE: Vec3 = [7, 3.4, 4.4]; // w, h, d
-/** y of the board underside / table surface that everything rests on. */
-export const TABLE_Y = -BOARD_THICKNESS;
-
-export function batteryTerminalPosition(terminal: BatteryTerminal): Vec3 {
-  const [cx, , cz] = BATTERY_CENTER;
-  const topY = TABLE_Y + BATTERY_SIZE[1];
-  const dx = terminal === "+" ? 1.8 : -1.8;
-  return [cx + dx, topY + 0.9, cz];
-}
-
-/** World position of a wire endpoint. */
-export function wireEndPosition(end: WireEnd): Vec3 {
-  if (end.kind === "battery") return batteryTerminalPosition(end.terminal);
-  const hole = parseHoleId(end.hole);
-  if (!hole) return [0, 0, 0];
-  return holePosition(hole);
 }
 
 /* https://github.com/algorave-dave/Fail-safe/blob/main/Fail-safe.js

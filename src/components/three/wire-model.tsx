@@ -1,18 +1,27 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
-import type { Wire } from "@/lib/types";
+import type { BatteryTerminalPositions, Wire } from "@/lib/types";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
 import { HIGHLIGHT_EMISSIVE } from "./highlight";
 import { wireCurve } from "./paths";
 
-export function WireModel({ wire }: { wire: Wire }) {
+export function WireModel({
+  wire,
+  batteryTerminals,
+}: {
+  wire: Wire;
+  batteryTerminals: BatteryTerminalPositions;
+}) {
   const select = useCircuitStore((s) => s.select);
   const selected = useCircuitStore(
     (s) => s.selection?.kind === "wire" && s.selection.id === wire.id,
   );
 
-  const curve = useMemo(() => wireCurve(wire), [wire]);
+  const curve = useMemo(
+    () => wireCurve(wire, batteryTerminals),
+    [batteryTerminals, wire],
+  );
 
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (e.delta > 4) return;
@@ -23,6 +32,7 @@ export function WireModel({ wire }: { wire: Wire }) {
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: This is a raycast target in a Three.js canvas, not a DOM element.
     <mesh onClick={onClick}>
       <tubeGeometry args={[curve, 24, 0.13, 8, false]} />
       <meshStandardMaterial
