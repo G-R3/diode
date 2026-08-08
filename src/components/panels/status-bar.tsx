@@ -19,7 +19,7 @@ export function StatusBar() {
   if (empty) {
     icon = <Info className="size-3.5 shrink-0" />;
     text =
-      "Pick a component on the left, click the board to place it, then connect the battery posts with jumper wires.";
+      "Pick a component on the left, click the board to place it, then connect the battery terminals with jumper wires.";
     tone = "text-muted-foreground";
   } else if (errors.length > 0) {
     icon = <OctagonAlert className="size-3.5 shrink-0" />;

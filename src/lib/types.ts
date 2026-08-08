@@ -13,7 +13,11 @@ export type Hole =
 
 export type BatteryTerminal = "+" | "-";
 
-/** Where a jumper wire ends: a breadboard hole or a battery terminal post. */
+export type Vec3 = readonly [number, number, number];
+
+export type BatteryTerminalPositions = Readonly<Record<BatteryTerminal, Vec3>>;
+
+/** Where a jumper wire ends: a breadboard hole or a battery terminal. */
 export type WireEnd =
   | { kind: "hole"; hole: HoleId }
   | { kind: "battery"; terminal: BatteryTerminal };

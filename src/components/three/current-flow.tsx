@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
+import type { BatteryTerminalPositions } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
 import { componentCurve, wireCurve } from "./paths";
 
@@ -16,7 +17,9 @@ interface FlowSegment {
   particles: number;
 }
 
-function useFlowSegments(): FlowSegment[] {
+function useFlowSegments(
+  batteryTerminals: BatteryTerminalPositions,
+): FlowSegment[] {
   const components = useCircuitStore((s) => s.components);
   const wires = useCircuitStore((s) => s.wires);
   const sim = useCircuitStore((s) => s.sim);
@@ -38,14 +41,16 @@ function useFlowSegments(): FlowSegment[] {
     };
     for (const wire of wires) {
       const i = sim.wireCurrent.get(wire.id) ?? 0;
-      if (Math.abs(i) >= MIN_VISIBLE_CURRENT) add(wireCurve(wire), i);
+      if (Math.abs(i) >= MIN_VISIBLE_CURRENT) {
+        add(wireCurve(wire, batteryTerminals), i);
+      }
     }
     for (const comp of components) {
       const i = sim.components.get(comp.id)?.current ?? 0;
       if (Math.abs(i) >= MIN_VISIBLE_CURRENT) add(componentCurve(comp), i);
     }
     return segments;
-  }, [components, wires, sim]);
+  }, [batteryTerminals, components, wires, sim]);
 }
 
 /** Speed in world units/sec; saturates so big currents don't blur into noise. */
@@ -59,9 +64,13 @@ function flowSpeed(current: number): number {
  * follows conventional current; no particles means no current, which makes
  * open circuits visually obvious.
  */
-export function CurrentFlow() {
+export function CurrentFlow({
+  batteryTerminals,
+}: {
+  batteryTerminals: BatteryTerminalPositions;
+}) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const segments = useFlowSegments();
+  const segments = useFlowSegments(batteryTerminals);
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
   useFrame(({ clock }) => {

@@ -1,6 +1,6 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
-import type { Vec3 } from "@/lib/breadboard";
+import type { Vec3 } from "@/lib/types";
 import { type Highlight, highlightProps } from "./highlight";
 import { Cyl } from "./util";
 

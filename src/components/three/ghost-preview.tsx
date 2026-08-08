@@ -1,15 +1,12 @@
 import { useMemo } from "react";
-import {
-  holePosition,
-  parseHoleId,
-  type Vec3,
-  wireEndPosition,
-} from "@/lib/breadboard";
+import { holePosition, parseHoleId } from "@/lib/breadboard";
 import {
   isPlacementFree,
   occupiedHoles,
   placementTarget,
 } from "@/lib/placement";
+import type { BatteryTerminalPositions, Vec3 } from "@/lib/types";
+import { wireEndPosition } from "@/lib/wire-geometry";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
 import { arcCurve } from "./paths";
@@ -30,8 +27,13 @@ function GhostBody({ a, b, valid }: { a: Vec3; b: Vec3; valid: boolean }) {
           <meshStandardMaterial color={color} transparent opacity={0.55} />
         </mesh>
       </group>
-      {[a, b].map((p, i) => (
-        <mesh key={i} position={[p[0], 0.25, p[2]]} raycast={() => null}>
+      {(
+        [
+          ["a", a],
+          ["b", b],
+        ] as const
+      ).map(([key, p]) => (
+        <mesh key={key} position={[p[0], 0.25, p[2]]} raycast={() => null}>
           <cylinderGeometry args={[0.18, 0.18, 0.5, 10]} />
           <meshStandardMaterial color={color} transparent opacity={0.7} />
         </mesh>
@@ -41,7 +43,11 @@ function GhostBody({ a, b, valid }: { a: Vec3; b: Vec3; valid: boolean }) {
 }
 
 /** Translucent preview of the pending placement or wire under the cursor. */
-export function GhostPreview() {
+export function GhostPreview({
+  batteryTerminals,
+}: {
+  batteryTerminals: BatteryTerminalPositions;
+}) {
   const tool = useCircuitStore((s) => s.tool);
   const hoverHole = useCircuitStore((s) => s.hoverHole);
   const wireStart = useCircuitStore((s) => s.wireStart);
@@ -74,7 +80,7 @@ export function GhostPreview() {
   if (tool.kind === "wire" && wireStart && hoverHole) {
     const hover = parseHoleId(hoverHole);
     if (!hover) return null;
-    const from = wireEndPosition(wireStart);
+    const from = wireEndPosition(wireStart, batteryTerminals);
     const to = holePosition(hover);
     const free = !occupied.has(hoverHole);
     const curve = arcCurve(from, to);

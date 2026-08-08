@@ -1,7 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { TABLE_Y } from "@/lib/breadboard";
+import { WORK_SURFACE_Y } from "@/lib/workspace";
 
 /**
  * A finite blue "self-healing cutting mat" that the breadboard sits on.
@@ -212,7 +212,7 @@ export function WorkspaceMat() {
       depth: MAT_THICKNESS,
       bevelEnabled: false,
     });
-    // Extrudes along +z; lay it flat so it extends downward from TABLE_Y.
+    // Extrudes along +z; lay it flat so it extends below the work surface.
     // Keep the top face well clear of the textured plane above it, or the
     // two surfaces z-fight (flicker) at far zoom / shallow angles.
     geo.rotateX(Math.PI / 2);
@@ -226,18 +226,21 @@ export function WorkspaceMat() {
     <group>
       {/* Dark desk surface stretching to the horizon under the mat. */}
       <mesh
-        position={[0, TABLE_Y - MAT_THICKNESS - 0.4, 0]}
+        position={[0, WORK_SURFACE_Y - MAT_THICKNESS - 0.4, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <planeGeometry args={[900, 900]} />
         <meshStandardMaterial color="#131519" roughness={1} />
       </mesh>
       {/* Mat body: darker blue slab with rounded corners. */}
-      <mesh geometry={slabGeometry} position={[0, TABLE_Y, 0]}>
+      <mesh geometry={slabGeometry} position={[0, WORK_SURFACE_Y, 0]}>
         <meshStandardMaterial color="#1d4a87" roughness={0.9} />
       </mesh>
       {/* Mat artwork (transparent outside its rounded corners). */}
-      <mesh position={[0, TABLE_Y - 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh
+        position={[0, WORK_SURFACE_Y - 0.01, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
         <planeGeometry args={[MAT_WIDTH, MAT_DEPTH]} />
         <meshStandardMaterial
           map={texture}

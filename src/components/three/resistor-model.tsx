@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import * as THREE from "three";
-import type { Vec3 } from "@/lib/breadboard";
+import type { Vec3 } from "@/lib/types";
 import { type Highlight, highlightProps } from "./highlight";
 import { Cyl } from "./util";
 

@@ -1,11 +1,12 @@
 import * as THREE from "three";
-import {
-  holePosition,
-  parseHoleId,
-  type Vec3,
-  wireEndPosition,
-} from "@/lib/breadboard";
-import type { PlacedComponent, Wire } from "@/lib/types";
+import { holePosition, parseHoleId } from "@/lib/breadboard";
+import type {
+  BatteryTerminalPositions,
+  PlacedComponent,
+  Vec3,
+  Wire,
+} from "@/lib/types";
+import { wireEndPosition } from "@/lib/wire-geometry";
 
 /** Arc between two points, lifted in the middle like a real jumper wire. */
 export function arcCurve(
@@ -22,8 +23,14 @@ export function arcCurve(
   return new THREE.QuadraticBezierCurve3(pa, mid, pb);
 }
 
-export function wireCurve(wire: Wire): THREE.QuadraticBezierCurve3 {
-  return arcCurve(wireEndPosition(wire.a), wireEndPosition(wire.b));
+export function wireCurve(
+  wire: Wire,
+  batteryTerminals: BatteryTerminalPositions,
+): THREE.QuadraticBezierCurve3 {
+  return arcCurve(
+    wireEndPosition(wire.a, batteryTerminals),
+    wireEndPosition(wire.b, batteryTerminals),
+  );
 }
 
 export function componentEndpoints(comp: PlacedComponent): {
