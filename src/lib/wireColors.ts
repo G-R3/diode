@@ -1,9 +1,9 @@
 import type { WireColor } from "./types";
 
 export const WIRE_COLORS: Record<WireColor, string> = {
-  red: "#dc2626",
-  black: "#27272a",
-  green: "#16a34a",
-  blue: "#2563eb",
-  yellow: "#eab308",
+  red: "#f73b48",
+  black: "#494951",
+  green: "#2bcf65",
+  blue: "#42c3fc",
+  yellow: "#fbd62e",
 };
