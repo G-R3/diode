@@ -1,10 +1,14 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
 import type { BatteryTerminalPositions, Wire } from "@/lib/types";
+import { WIRE_CABLE_RADIUS, wireEndPosition } from "@/lib/wire-geometry";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
 import { HIGHLIGHT_EMISSIVE } from "./highlight";
-import { wireCurve } from "./paths";
+import { wireCurve, wireTubularSegments } from "./paths";
+import { WireConnector } from "./wire-connector";
+
+const HIT_TARGET_RADIUS = 0.3;
 
 export function WireModel({
   wire,
@@ -22,7 +26,14 @@ export function WireModel({
     () => wireCurve(wire, batteryTerminals),
     [batteryTerminals, wire],
   );
-
+  const endpoints = useMemo(
+    () => ({
+      a: wireEndPosition(wire.a, batteryTerminals),
+      b: wireEndPosition(wire.b, batteryTerminals),
+    }),
+    [batteryTerminals, wire],
+  );
+  const tubularSegments = useMemo(() => wireTubularSegments(curve), [curve]);
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     if (e.delta > 4) return;
     const s = useCircuitStore.getState();
@@ -32,15 +43,36 @@ export function WireModel({
   };
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: This is a raycast target in a Three.js canvas, not a DOM element.
-    <mesh onClick={onClick}>
-      <tubeGeometry args={[curve, 24, 0.13, 8, false]} />
-      <meshStandardMaterial
-        color={WIRE_COLORS[wire.color]}
-        roughness={0.45}
-        emissive={selected ? HIGHLIGHT_EMISSIVE.selected : "#000000"}
-        emissiveIntensity={selected ? 0.5 : 0}
-      />
-    </mesh>
+    <group>
+      <mesh raycast={() => null}>
+        <tubeGeometry
+          args={[curve, tubularSegments, WIRE_CABLE_RADIUS, 8, false]}
+        />
+        <meshStandardMaterial
+          color={WIRE_COLORS[wire.color]}
+          roughness={0.5}
+          metalness={0}
+          emissive={
+            selected ? HIGHLIGHT_EMISSIVE.selected : WIRE_COLORS[wire.color]
+          }
+          emissiveIntensity={selected ? 0.5 : 0.25}
+        />
+      </mesh>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: This is an invisible Three.js raycast target. */}
+      <mesh onClick={onClick}>
+        <tubeGeometry
+          args={[
+            curve,
+            Math.max(24, Math.ceil(tubularSegments / 2)),
+            HIT_TARGET_RADIUS,
+            4,
+            false,
+          ]}
+        />
+        <meshBasicMaterial visible={false} />
+      </mesh>
+      <WireConnector position={endpoints.a} onClick={onClick} />
+      <WireConnector position={endpoints.b} onClick={onClick} />
+    </group>
   );
 }

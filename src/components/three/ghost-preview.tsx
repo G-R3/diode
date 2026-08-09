@@ -6,10 +6,11 @@ import {
   placementTarget,
 } from "@/lib/placement";
 import type { BatteryTerminalPositions, Vec3 } from "@/lib/types";
-import { wireEndPosition } from "@/lib/wire-geometry";
+import { WIRE_CABLE_RADIUS, wireEndPosition } from "@/lib/wire-geometry";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
-import { arcCurve } from "./paths";
+import { jumperCurve, wireTubularSegments } from "./paths";
+import { WireConnector } from "./wire-connector";
 
 const VALID_COLOR = "#22c55e";
 const INVALID_COLOR = "#ef4444";
@@ -83,16 +84,28 @@ export function GhostPreview({
     const from = wireEndPosition(wireStart, batteryTerminals);
     const to = holePosition(hover);
     const free = !occupied.has(hoverHole);
-    const curve = arcCurve(from, to);
+    const curve = jumperCurve(from, to);
     return (
-      <mesh raycast={() => null}>
-        <tubeGeometry args={[curve, 24, 0.13, 8, false]} />
-        <meshStandardMaterial
-          color={free ? WIRE_COLORS[tool.color] : INVALID_COLOR}
-          transparent
-          opacity={0.55}
-        />
-      </mesh>
+      <group>
+        <mesh raycast={() => null}>
+          <tubeGeometry
+            args={[
+              curve,
+              wireTubularSegments(curve),
+              WIRE_CABLE_RADIUS,
+              8,
+              false,
+            ]}
+          />
+          <meshStandardMaterial
+            color={free ? WIRE_COLORS[tool.color] : INVALID_COLOR}
+            transparent
+            opacity={0.55}
+          />
+        </mesh>
+        <WireConnector position={from} />
+        <WireConnector position={to} />
+      </group>
     );
   }
 
