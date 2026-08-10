@@ -43,7 +43,7 @@ export function ComponentModel({ comp }: { comp: PlacedComponent }) {
     case "resistor":
       return (
         <group onClick={onClick}>
-          <ResistorModel a={a} b={b} ohms={comp.ohms} highlight={highlight} />
+          <ResistorModel a={a} b={b} ohms={comp.ohms} />
         </group>
       );
     case "led":

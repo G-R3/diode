@@ -10,6 +10,7 @@ import { WIRE_CABLE_RADIUS, wireEndPosition } from "@/lib/wire-geometry";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
 import { jumperCurve, wireTubularSegments } from "./paths";
+import { ResistorGhost } from "./resistor-model";
 import { WireConnector } from "./wire-connector";
 
 const VALID_COLOR = "#22c55e";
@@ -69,13 +70,12 @@ export function GhostPreview({
       return <GhostBody a={p} b={p} valid={false} />;
     }
     const valid = isPlacementFree(target, occupied);
-    return (
-      <GhostBody
-        a={holePosition(target.a)}
-        b={holePosition(target.b)}
-        valid={valid}
-      />
-    );
+    const a = holePosition(target.a);
+    const b = holePosition(target.b);
+    if (tool.component === "resistor") {
+      return <ResistorGhost a={a} b={b} valid={valid} />;
+    }
+    return <GhostBody a={a} b={b} valid={valid} />;
   }
 
   if (tool.kind === "wire" && wireStart && hoverHole) {
