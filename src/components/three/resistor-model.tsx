@@ -3,6 +3,13 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import type { Vec3 } from "@/lib/types";
 import { WIRE_COLORS } from "@/lib/wireColors";
+import {
+  cloneTwoTerminalAsset,
+  invisibleHitboxMaterial,
+  placementGhostMaterials,
+  type TwoTerminalAsset,
+  twoTerminalTransform,
+} from "./two-terminal-asset";
 
 const MODEL_URL = "/models/resistor.glb";
 const BAND_COUNT = 6;
@@ -33,33 +40,8 @@ const bandMaterials = new Map(
     }),
   ]),
 );
-const hitboxMaterial = new THREE.MeshBasicMaterial({ visible: false });
-const ghostMaterials = {
-  valid: new THREE.MeshStandardMaterial({
-    color: "#22c55e",
-    depthWrite: false,
-    opacity: 0.55,
-    roughness: 0.6,
-    transparent: true,
-  }),
-  invalid: new THREE.MeshStandardMaterial({
-    color: "#ef4444",
-    depthWrite: false,
-    opacity: 0.55,
-    roughness: 0.6,
-    transparent: true,
-  }),
-};
-interface PreparedResistor {
-  model: THREE.Object3D;
-  anchorA: THREE.Vector3;
-  anchorB: THREE.Vector3;
-}
-
-interface ResistorAsset extends PreparedResistor {
+interface ResistorAsset extends TwoTerminalAsset {
   bands: readonly THREE.Mesh[];
-  hitbox: THREE.Mesh;
-  visuals: readonly THREE.Mesh[];
 }
 
 interface ResistorModelProps {
@@ -74,7 +56,7 @@ export function ResistorModel({ a, b, ohms }: ResistorModelProps) {
   const asset = useMemo(() => prepareResistor(scene, bands), [bands, scene]);
 
   const transform = useMemo(
-    () => resistorTransform(a, b, asset.anchorA, asset.anchorB),
+    () => twoTerminalTransform(a, b, asset.anchorA, asset.anchorB),
     [a, asset.anchorA, asset.anchorB, b],
   );
 
@@ -100,7 +82,7 @@ export function ResistorGhost({
     [scene, valid],
   );
   const transform = useMemo(
-    () => resistorTransform(a, b, asset.anchorA, asset.anchorB),
+    () => twoTerminalTransform(a, b, asset.anchorA, asset.anchorB),
     [a, asset.anchorA, asset.anchorB, b],
   );
 
@@ -114,9 +96,9 @@ export function ResistorGhost({
 function prepareResistor(
   source: THREE.Object3D,
   colors: readonly string[],
-): PreparedResistor {
+): TwoTerminalAsset {
   const asset = cloneResistorAsset(source);
-  asset.hitbox.material = hitboxMaterial;
+  asset.hitbox.material = invisibleHitboxMaterial;
   asset.hitbox.visible = true;
 
   asset.bands.forEach((band, index) => {
@@ -134,12 +116,12 @@ function prepareResistor(
 function prepareResistorGhost(
   source: THREE.Object3D,
   valid: boolean,
-): PreparedResistor {
+): TwoTerminalAsset {
   const asset = cloneResistorAsset(source);
   asset.hitbox.visible = false;
   asset.visuals.forEach((visual) => {
     visual.visible = true;
-    visual.material = ghostMaterials[valid ? "valid" : "invalid"];
+    visual.material = placementGhostMaterials[valid ? "valid" : "invalid"];
   });
   asset.bands.forEach((band, index) => {
     band.visible = index < 4;
@@ -149,42 +131,10 @@ function prepareResistorGhost(
 
 /** Clone the GLB and resolve its named runtime contract once. */
 function cloneResistorAsset(source: THREE.Object3D): ResistorAsset {
-  const model = source.clone(true);
-  const visuals: THREE.Mesh[] = [];
-  const found: {
-    anchorA?: THREE.Vector3;
-    anchorB?: THREE.Vector3;
-    hitbox?: THREE.Mesh;
-  } = {};
-
-  model.updateMatrixWorld(true);
-  model.traverse((obj) => {
-    if (obj.userData?.role === "terminal-anchor") {
-      if (obj.userData.terminal === "a") {
-        found.anchorA = obj.getWorldPosition(new THREE.Vector3());
-      }
-      if (obj.userData.terminal === "b") {
-        found.anchorB = obj.getWorldPosition(new THREE.Vector3());
-      }
-      return;
-    }
-    if (!(obj instanceof THREE.Mesh)) return;
-    if (obj.userData?.role === "hitbox" || obj.name === "hitbox_Resistor") {
-      found.hitbox = obj;
-      return;
-    }
-    obj.raycast = () => null;
-    visuals.push(obj);
-  });
-
-  if (!found.anchorA || !found.anchorB || !found.hitbox) {
-    throw new Error(
-      "resistor.glb must export two terminal anchors and a hitbox",
-    );
-  }
+  const asset = cloneTwoTerminalAsset(source, "Resistor");
 
   const bands = Array.from({ length: BAND_COUNT }, (_, index) => {
-    const band = model.getObjectByName(`band_${index + 1}`);
+    const band = asset.model.getObjectByName(`band_${index + 1}`);
     if (!(band instanceof THREE.Mesh)) {
       throw new Error(`resistor.glb must export band_${index + 1}`);
     }
@@ -192,35 +142,8 @@ function cloneResistorAsset(source: THREE.Object3D): ResistorAsset {
   });
 
   return {
-    model,
-    anchorA: found.anchorA,
-    anchorB: found.anchorB,
+    ...asset,
     bands,
-    hitbox: found.hitbox,
-    visuals,
-  };
-}
-
-function resistorTransform(
-  a: Vec3,
-  b: Vec3,
-  anchorA: THREE.Vector3,
-  anchorB: THREE.Vector3,
-) {
-  const targetA = new THREE.Vector3(...a);
-  const targetB = new THREE.Vector3(...b);
-  const quaternion = new THREE.Quaternion().setFromUnitVectors(
-    anchorB.clone().sub(anchorA).normalize(),
-    targetB.clone().sub(targetA).normalize(),
-  );
-  const localMidpoint = anchorA.clone().add(anchorB).multiplyScalar(0.5);
-
-  return {
-    position: targetA
-      .add(targetB)
-      .multiplyScalar(0.5)
-      .sub(localMidpoint.applyQuaternion(quaternion)),
-    quaternion,
   };
 }
 

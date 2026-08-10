@@ -54,7 +54,7 @@ export function ComponentModel({ comp }: { comp: PlacedComponent }) {
             b={b}
             color={comp.color}
             brightness={reading?.brightness ?? 0}
-            highlight={highlight}
+            highlight={selected ? "selected" : null}
           />
         </group>
       );

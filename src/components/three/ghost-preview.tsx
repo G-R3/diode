@@ -9,6 +9,7 @@ import type { BatteryTerminalPositions, Vec3 } from "@/lib/types";
 import { WIRE_CABLE_RADIUS, wireEndPosition } from "@/lib/wire-geometry";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
+import { LedGhost } from "./led-model";
 import { jumperCurve, wireTubularSegments } from "./paths";
 import { ResistorGhost } from "./resistor-model";
 import { WireConnector } from "./wire-connector";
@@ -74,6 +75,9 @@ export function GhostPreview({
     const b = holePosition(target.b);
     if (tool.component === "resistor") {
       return <ResistorGhost a={a} b={b} valid={valid} />;
+    }
+    if (tool.component === "led") {
+      return <LedGhost a={a} b={b} valid={valid} />;
     }
     return <GhostBody a={a} b={b} valid={valid} />;
   }
