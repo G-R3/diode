@@ -38,9 +38,10 @@ export function SceneCanvas() {
   const components = useCircuitStore((s) => s.components);
   const wires = useCircuitStore((s) => s.wires);
 
+  // Component details are sub-unit, so close orbit views need a shallow near plane.
   return (
     <Canvas
-      camera={{ position: [0, 58, 50], fov: 42, near: 1, far: 800 }}
+      camera={{ position: [0, 58, 50], fov: 42, near: 0.1, far: 800 }}
       dpr={[1, 2]}
       onPointerMissed={() => useCircuitStore.getState().select(null)}
     >
