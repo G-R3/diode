@@ -55,10 +55,10 @@ export function SceneCanvas() {
       <WorkspaceMat />
       <Suspense fallback={null}>
         <LoadedCircuitScene wires={wires} />
+        {components.map((comp) => (
+          <ComponentModel key={comp.id} comp={comp} />
+        ))}
       </Suspense>
-      {components.map((comp) => (
-        <ComponentModel key={comp.id} comp={comp} />
-      ))}
 
       <OrbitControls
         makeDefault

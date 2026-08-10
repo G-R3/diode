@@ -1,4 +1,4 @@
-import { type Dir, holeId, offsetHole } from "./breadboard";
+import { type Dir, holeId, offsetHoleByDistance } from "./breadboard";
 import type {
   ComponentKind,
   Hole,
@@ -7,9 +7,9 @@ import type {
   Wire,
 } from "./types";
 
-/** How many holes apart a component's two legs sit. */
+/** Nominal pin distance in breadboard-pitch world units. */
 export const COMPONENT_SPAN: Record<ComponentKind, number> = {
-  resistor: 4,
+  resistor: 3,
   led: 1,
   button: 2,
 };
@@ -25,7 +25,7 @@ export function placementTarget(
   kind: ComponentKind,
   dir: Dir,
 ): PlacementTarget | null {
-  const b = offsetHole(anchor, dir, COMPONENT_SPAN[kind]);
+  const b = offsetHoleByDistance(anchor, dir, COMPONENT_SPAN[kind]);
   return b ? { a: anchor, b } : null;
 }
 

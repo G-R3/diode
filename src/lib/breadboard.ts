@@ -162,6 +162,29 @@ export function offsetHole(hole: Hole, dir: Dir, n: number): Hole | null {
   return { kind: "rail", rail: hole.rail, index };
 }
 
+/** Walk in `dir` to the first hole exactly `distance` world units away. */
+export function offsetHoleByDistance(
+  hole: Hole,
+  dir: Dir,
+  distance: number,
+): Hole | null {
+  if (distance < 0) return null;
+  if (distance === 0) return hole;
+  const start = holePosition(hole);
+  const distanceSquared = distance * distance;
+
+  return (
+    Array.from({ length: Math.ceil(distance) }, (_, index) =>
+      offsetHole(hole, dir, index + 1),
+    ).find((candidate) => {
+      if (!candidate) return false;
+      const end = holePosition(candidate);
+      const actualSquared = (end[0] - start[0]) ** 2 + (end[2] - start[2]) ** 2;
+      return Math.abs(actualSquared - distanceSquared) < 1e-9;
+    }) ?? null
+  );
+}
+
 /* https://github.com/algorave-dave/Fail-safe/blob/main/Fail-safe.js
 
   ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⠀⠀⠀⠀⡀⠀⠂⠀⠄⡀⢀⡂⣀⠀⢀
