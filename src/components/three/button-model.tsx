@@ -5,8 +5,8 @@ import * as THREE from "three";
 import type { Vec3 } from "@/lib/types";
 import {
   cloneTwoTerminalAsset,
+  configurePlacementGhost,
   invisibleHitboxMaterial,
-  placementGhostMaterials,
   type TwoTerminalAsset,
   twoTerminalTransform,
 } from "./two-terminal-asset";
@@ -99,11 +99,7 @@ function prepareButtonGhost(
   valid: boolean,
 ): TwoTerminalAsset {
   const asset = cloneButtonAsset(source);
-  asset.hitbox.visible = false;
-  asset.visuals.forEach((visual) => {
-    visual.visible = true;
-    visual.material = placementGhostMaterials[valid ? "valid" : "invalid"];
-  });
+  configurePlacementGhost(asset, valid);
   return asset;
 }
 

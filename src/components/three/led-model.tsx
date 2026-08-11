@@ -6,8 +6,8 @@ import type { LedColor, Vec3 } from "@/lib/types";
 import { HIGHLIGHT_EMISSIVE, type Highlight } from "./highlight";
 import {
   cloneTwoTerminalAsset,
+  configurePlacementGhost,
   invisibleHitboxMaterial,
-  placementGhostMaterials,
   type TwoTerminalAsset,
   twoTerminalTransform,
 } from "./two-terminal-asset";
@@ -183,11 +183,7 @@ function prepareLed(source: THREE.Object3D): LedAsset {
 
 function prepareLedGhost(source: THREE.Object3D, valid: boolean): PreparedLed {
   const asset = cloneLedAsset(source);
-  asset.hitbox.visible = false;
-  asset.visuals.forEach((visual) => {
-    visual.visible = true;
-    visual.material = placementGhostMaterials[valid ? "valid" : "invalid"];
-  });
+  configurePlacementGhost(asset, valid);
   return asset;
 }
 
