@@ -35,8 +35,11 @@ export type LedColor = "red" | "green" | "blue" | "yellow" | "white";
 
 export type ComponentKind = "resistor" | "led" | "button";
 
-interface ComponentBase {
+interface ComponentIdentity {
   id: ComponentId;
+}
+
+interface TwoTerminalComponent extends ComponentIdentity {
   /** First terminal (placement anchor). For LEDs this is the cathode (−). */
   holeA: HoleId;
   /** Second terminal (placement far end). For LEDs this is the anode (+). */
@@ -44,9 +47,18 @@ interface ComponentBase {
 }
 
 export type PlacedComponent =
-  | (ComponentBase & { kind: "resistor"; ohms: number })
-  | (ComponentBase & { kind: "led"; color: LedColor; vf: number })
-  | (ComponentBase & { kind: "button"; pressed: boolean });
+  | (TwoTerminalComponent & { kind: "resistor"; ohms: number })
+  | (TwoTerminalComponent & { kind: "led"; color: LedColor; vf: number })
+  | (ComponentIdentity & {
+      kind: "button";
+      /** The two permanently paired legs on terminal A. */
+      holeA1: HoleId;
+      holeA2: HoleId;
+      /** The two permanently paired legs on terminal B. */
+      holeB1: HoleId;
+      holeB2: HoleId;
+      pressed: boolean;
+    });
 
 export interface Battery {
   volts: number;

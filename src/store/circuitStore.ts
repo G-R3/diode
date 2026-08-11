@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { type Dir, holeId } from "@/lib/breadboard";
 import {
-  COMPONENT_SPAN,
   isPlacementFree,
   occupiedHoles,
   placementTarget,
@@ -118,29 +117,41 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
     if (!target) return;
     if (!isPlacementFree(target, occupiedHoles(s.components, s.wires))) return;
 
-    const holeA = holeId(target.a);
-    const holeB = holeId(target.b);
     const id = newComponentId();
     let component: PlacedComponent;
-    switch (s.tool.component) {
+    switch (target.kind) {
       case "resistor":
-        component = { id, kind: "resistor", holeA, holeB, ohms: 220 };
+        component = {
+          id,
+          kind: "resistor",
+          holeA: holeId(target.a),
+          holeB: holeId(target.b),
+          ohms: 220,
+        };
         break;
       case "led":
         component = {
           id,
           kind: "led",
-          holeA,
-          holeB,
+          holeA: holeId(target.a),
+          holeB: holeId(target.b),
           color: "red",
           vf: LED_DEFAULT_VF.red,
         };
         break;
       case "button":
-        component = { id, kind: "button", holeA, holeB, pressed: false };
+        component = {
+          id,
+          kind: "button",
+          holeA1: holeId(target.a),
+          holeA2: holeId(target.a2),
+          holeB1: holeId(target.b),
+          holeB2: holeId(target.b2),
+          pressed: false,
+        };
         break;
       default: {
-        const _exhaustive: never = s.tool.component;
+        const _exhaustive: never = target;
         return _exhaustive;
       }
     }
@@ -305,5 +316,3 @@ export const useCircuitStore = create<CircuitState>()((set, get) => ({
       sim: resolve(project.components, project.wires, project.battery),
     }),
 }));
-
-export { COMPONENT_SPAN };

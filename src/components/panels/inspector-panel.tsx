@@ -180,7 +180,7 @@ function ButtonInspector({
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Momentary push button. Press and hold the red cap in the scene to close
+        Momentary push button. Press and hold the actuator in the scene to close
         the circuit.
       </p>
       <Readings reading={reading} />

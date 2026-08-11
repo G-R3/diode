@@ -1,19 +1,10 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import type { PlacedComponent } from "@/lib/types";
-import type { ComponentStatus } from "@/sim/solver";
 import { useCircuitStore } from "@/store/circuitStore";
 import { ButtonModel } from "./button-model";
-import type { Highlight } from "./highlight";
 import { LedModel } from "./led-model";
 import { componentEndpoints } from "./paths";
 import { ResistorModel } from "./resistor-model";
-
-const WARNING_STATUSES: ReadonlySet<ComponentStatus> = new Set([
-  "no-path",
-  "reversed",
-  "overcurrent",
-  "bypassed",
-]);
 
 export function ComponentModel({ comp }: { comp: PlacedComponent }) {
   const select = useCircuitStore((s) => s.select);
@@ -22,12 +13,6 @@ export function ComponentModel({ comp }: { comp: PlacedComponent }) {
     (s) => s.selection?.kind === "component" && s.selection.id === comp.id,
   );
   const reading = useCircuitStore((s) => s.sim.components.get(comp.id));
-
-  const highlight: Highlight = selected
-    ? "selected"
-    : reading && WARNING_STATUSES.has(reading.status)
-      ? "warning"
-      : null;
 
   const { a, b } = componentEndpoints(comp);
 
@@ -65,7 +50,6 @@ export function ComponentModel({ comp }: { comp: PlacedComponent }) {
             a={a}
             b={b}
             pressed={comp.pressed}
-            highlight={highlight}
             onPress={(down) => setButtonPressed(comp.id, down)}
           />
         </group>

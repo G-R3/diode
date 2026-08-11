@@ -103,8 +103,8 @@ export function componentEndpoints(comp: PlacedComponent): {
   a: Vec3;
   b: Vec3;
 } {
-  const ha = parseHoleId(comp.holeA);
-  const hb = parseHoleId(comp.holeB);
+  const ha = parseHoleId(comp.kind === "button" ? comp.holeA1 : comp.holeA);
+  const hb = parseHoleId(comp.kind === "button" ? comp.holeB1 : comp.holeB);
   return {
     a: ha ? holePosition(ha) : [0, 0, 0],
     b: hb ? holePosition(hb) : [0, 0, 0],

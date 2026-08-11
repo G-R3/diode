@@ -2,6 +2,7 @@ import { Html } from "@react-three/drei";
 import { useMemo } from "react";
 import { holePosition, parseHoleId, stripOfHole } from "@/lib/breadboard";
 import { formatAmps, formatVolts } from "@/lib/format";
+import { componentHoleIds } from "@/lib/placement";
 import type { BatteryTerminalPositions, StripId, Vec3 } from "@/lib/types";
 import { useCircuitStore } from "@/store/circuitStore";
 import { componentEndpoints, wireCurve } from "./paths";
@@ -54,8 +55,7 @@ export function Labels({
       byStrip.set(strip, { x: acc.x + x, z: acc.z + z, n: acc.n + 1 });
     };
     for (const c of components) {
-      addHole(c.holeA);
-      addHole(c.holeB);
+      componentHoleIds(c).forEach(addHole);
     }
     for (const w of wires) {
       if (w.a.kind === "hole") addHole(w.a.hole);
