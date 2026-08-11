@@ -5,9 +5,14 @@ export const invisibleHitboxMaterial = new THREE.MeshBasicMaterial({
   visible: false,
 });
 
-export const placementGhostMaterials = {
+// Placement feedback stays readable when a low orbit angle puts the board or
+// cutting mat between the camera and the target hole.
+const PLACEMENT_GHOST_RENDER_ORDER = 1;
+
+const placementGhostMaterials = {
   valid: new THREE.MeshStandardMaterial({
     color: "#22c55e",
+    depthTest: false,
     depthWrite: false,
     opacity: 0.55,
     roughness: 0.6,
@@ -15,6 +20,7 @@ export const placementGhostMaterials = {
   }),
   invalid: new THREE.MeshStandardMaterial({
     color: "#ef4444",
+    depthTest: false,
     depthWrite: false,
     opacity: 0.55,
     roughness: 0.6,
@@ -28,6 +34,19 @@ export interface TwoTerminalAsset {
   anchorB: THREE.Vector3;
   hitbox: THREE.Mesh;
   visuals: readonly THREE.Mesh[];
+}
+
+/** Apply the shared non-interactive overlay treatment to a placement asset. */
+export function configurePlacementGhost(
+  asset: TwoTerminalAsset,
+  valid: boolean,
+) {
+  asset.hitbox.visible = false;
+  asset.visuals.forEach((visual) => {
+    visual.visible = true;
+    visual.material = placementGhostMaterials[valid ? "valid" : "invalid"];
+    visual.renderOrder = PLACEMENT_GHOST_RENDER_ORDER;
+  });
 }
 
 /** Clone and resolve the shared runtime contract for two-terminal GLBs. */

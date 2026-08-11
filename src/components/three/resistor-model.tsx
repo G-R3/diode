@@ -5,8 +5,8 @@ import type { Vec3 } from "@/lib/types";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import {
   cloneTwoTerminalAsset,
+  configurePlacementGhost,
   invisibleHitboxMaterial,
-  placementGhostMaterials,
   type TwoTerminalAsset,
   twoTerminalTransform,
 } from "./two-terminal-asset";
@@ -118,11 +118,7 @@ function prepareResistorGhost(
   valid: boolean,
 ): TwoTerminalAsset {
   const asset = cloneResistorAsset(source);
-  asset.hitbox.visible = false;
-  asset.visuals.forEach((visual) => {
-    visual.visible = true;
-    visual.material = placementGhostMaterials[valid ? "valid" : "invalid"];
-  });
+  configurePlacementGhost(asset, valid);
   asset.bands.forEach((band, index) => {
     band.visible = index < 4;
   });
