@@ -70,22 +70,32 @@ function parseComponent(v: unknown, i: number): PlacedComponent {
   if (typeof v.id !== "string" || v.id.length === 0)
     fail(`component #${i + 1} has no id`);
   const id = v.id as PlacedComponent["id"];
-  const holeA = asHoleId(v.holeA, `component #${i + 1} holeA`);
-  const holeB = asHoleId(v.holeB, `component #${i + 1} holeB`);
   switch (v.kind) {
     case "resistor": {
+      const holeA = asHoleId(v.holeA, `component #${i + 1} holeA`);
+      const holeB = asHoleId(v.holeB, `component #${i + 1} holeB`);
       const ohms = asFiniteNumber(v.ohms, `resistor #${i + 1} ohms`);
       if (ohms <= 0) fail(`resistor #${i + 1} ohms must be positive`);
       return { id, kind: "resistor", holeA, holeB, ohms };
     }
     case "led": {
+      const holeA = asHoleId(v.holeA, `component #${i + 1} holeA`);
+      const holeB = asHoleId(v.holeB, `component #${i + 1} holeB`);
       if (!isLedColor(v.color)) fail(`LED #${i + 1} has an unknown color`);
       const vf = asFiniteNumber(v.vf, `LED #${i + 1} vf`);
       if (vf <= 0 || vf > 6) fail(`LED #${i + 1} vf is out of range`);
       return { id, kind: "led", holeA, holeB, color: v.color, vf };
     }
     case "button":
-      return { id, kind: "button", holeA, holeB, pressed: false };
+      return {
+        id,
+        kind: "button",
+        holeA1: asHoleId(v.holeA1, `component #${i + 1} holeA1`),
+        holeA2: asHoleId(v.holeA2, `component #${i + 1} holeA2`),
+        holeB1: asHoleId(v.holeB1, `component #${i + 1} holeB1`),
+        holeB2: asHoleId(v.holeB2, `component #${i + 1} holeB2`),
+        pressed: false,
+      };
     default:
       fail(`component #${i + 1} has unknown kind "${String(v.kind)}"`);
   }

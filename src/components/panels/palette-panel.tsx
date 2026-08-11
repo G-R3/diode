@@ -79,7 +79,13 @@ export function PalettePanel() {
           active={isPlace(kind)}
           label={`${label} — click the board to place, R rotates`}
           icon={icon}
-          onClick={() => pick({ kind: "place", component: kind, dir: 0 })}
+          onClick={() =>
+            pick({
+              kind: "place",
+              component: kind,
+              dir: kind === "button" ? 1 : 0,
+            })
+          }
         />
       ))}
       <div className="my-0.5 h-px w-6 bg-border" />

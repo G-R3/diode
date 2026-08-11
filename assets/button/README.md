@@ -3,52 +3,78 @@
 - **`button.blend`** — editable source of truth
 - **`public/models/button.glb`** — Draco-compressed runtime asset
 
-The asset is a low-poly 6 mm square, normally-open momentary tactile switch.
-It uses breadboard-hole-pitch units (1 unit = 2.54 mm), is authored with +Y
-up, and has its origin on the placement surface at the component's bottom
-center. The straight-sided black housing is 2.6 mm high, with molded leg-exit
-notches, a tightly fitted 0.2 mm metal plate, and a 1.2 mm exposed actuator.
-Its pin tips extend 2.8 mm below the housing.
+This is a low-poly, normally-open tactile pushbutton built specifically for
+Diode's breadboard placement contract. One world unit equals one 2.54 mm hole
+pitch, +Y is up, and the placement surface is Y = 0.
 
-The four pin tips use Diode's two-pitch spacing across the switch and 4.5 mm
-spacing along each paired side. Their gentle inward bends keep the switch
-believable both across the breadboard center channel and in other valid holes.
+## Authored dimensions
 
-Runtime contract:
+- Housing footprint: 6.0 × 5.4 mm (Blender Z fitted to 90%)
+- Plastic housing height: 2.5 mm
+- Integrated top plate: 5.72 × 5.15 mm and 0.18 mm thick
+- Exposed actuator: 2.7 mm nominal diameter and 1.2 mm tall
+- Nominal pin-tip grid: 5.08 × 5.08 mm
+- Pin insertion: 0.45 mm below the placement surface
+
+Four molded lead pockets with recessed walls and chamfered transitions open
+through the housing's lower side edges. The metal strips remain embedded above
+those pockets, so the legs read as captured parts of the switch rather than
+suspended wires.
+
+The four stamped legs share one editable Blender Curve datablock. Each leg has
+a short attachment embedded into the housing, one compact outward jog, and a
+short nearly vertical insertion tip. The linked controller curves remain
+editable in the `.blend`; changing one silhouette updates all four legs.
+
+`ButtonVisual_Legs` uses the `ButtonLegs_FromEditableCurves` Geometry Nodes
+group to turn those controllers into one capped, rectangular stamped-metal
+mesh. This keeps curve editing native to Blender while batching the four legs
+into one runtime mesh.
+
+Each upper strip is centered 2.40 mm from the housing centerline inside its
+molded pocket. A subtle 0.14 mm lateral fan-out along the curve brings the final
+tips back to the nominal ±2.54 mm breadboard-hole centers.
+
+## Runtime contract
 
 - Root: `Button`
-- Main visuals: `ButtonVisual_Body` and `ButtonVisual_Actuator`. The body is a
-  single mesh with separate plastic-housing and metal-top-plate material regions.
-- Four physical legs: `ButtonVisual_Leg_A1` through `ButtonVisual_Leg_B2`,
-  tagged `role = "button-leg"` and terminal `a` or `b`
-- Logical terminal anchors: `anchor_ButtonA` and `anchor_ButtonB`, tagged
+- Fixed body and integrated plate: `ButtonVisual_Body`
+- Movable actuator: `ButtonVisual_Actuator`, tagged
+  `role = "button-actuator"`
+- Four editable controller curves: `ButtonVisual_Leg_A1` through
+  `ButtonVisual_Leg_B2`, tagged `role = "button-leg-controller"` and stored in
+  Blender's `glTF_not_exported` collection
+- Batched Geometry Nodes output: `ButtonVisual_Legs`, tagged
+  `role = "button-legs"`
+- Logical anchors: `anchor_ButtonA` and `anchor_ButtonB`, tagged
   `role = "terminal-anchor"`
-- The four legs retain terminal `a`/`b` metadata, so their side pairing remains
-  explicit without extra runtime anchor objects
-- Pressable actuator: tagged `role = "button-actuator"`, with authored travel
-  metadata in `travel_mm` and `pressed_offset_y`
-- Selection target: `hitbox_Button`, tagged `role = "hitbox"`
+- Interaction volume: `hitbox_Button`, tagged `role = "hitbox"`
 
-## Editing the legs in Blender
+The app stores the explicit A1, A2, B1, and B2 footprint. The anchors coincide
+with physical legs A1 and B1 at local positions `[-1, 0, -1]` and
+`[1, 0, -1]`. A2 and B2 occupy the corresponding positions on the opposite
+rail-facing edge. Placement, rotation, occupancy, and wire conflicts use all
+four holes. The simulator permanently pairs A1/A2 and B1/B2, while pressing
+the actuator connects the A and B sides.
 
-The four source legs are linked Blender Curve objects sharing one six-point
-path and the hidden `ButtonLeg_Profile` rectangular bevel object. Select any
-leg, enter Edit Mode, and move its control points in Y/Z; all four legs update
-together, with the opposite pair mirrored automatically. Point Radius controls
-the gradual width/thickness taper along the stamped strip.
+## Editing and export
 
-The checked-in GLB contains ordinary mesh legs, so there is no curve dependency
-or additional runtime cost. After editing the `.blend`, run
-`artifacts/export-button-asset.py`; it saves the editable source, converts only
-the in-memory export copies, and writes the runtime GLB. Do not run the creation
-script after manual curve edits unless you intentionally want to regenerate the
-asset from its scripted defaults.
+Edit geometry and transforms only in `button.blend`. To change the leg
+silhouette, select a `ButtonVisual_Leg_*` controller in the Outliner, enter Edit
+Mode with Tab, then move its control points with G and the appropriate axis key.
+The Geometry Nodes result updates immediately; no curve conversion or duplicate
+export mesh is required.
 
-To export manually in Blender, save the editable `.blend`, select the four leg
-curves, use **Object > Convert > Mesh**, export the GLB, and then undo or reopen
-the saved source so the editable curves are retained. Blender's glTF exporter
-does not directly emit custom-profile Curve objects.
+Export with Blender's standard **File > Export > glTF 2.0** command:
 
-Export one embedded GLB with custom properties and Draco compression enabled.
-Omit textures, UVs, animations, cameras, and lights. Disable the glTF
-exporter's `+Y Up` conversion because this source is already Y-up.
+1. Select the `Button` hierarchy and enable **Selected Objects**.
+2. Use **glTF Binary (.glb)** and export to `public/models/button.glb`.
+3. Enable **Custom Properties**, **Apply Modifiers**, and Draco compression.
+4. Disable **+Y Up** because the source is already authored with +Y as up.
+5. Leave cameras, lights, animations, and textures disabled.
+
+The controller curves are intentionally kept in Blender's special
+`glTF_not_exported` collection, so the glTF exporter skips them. It evaluates
+`ButtonVisual_Legs` through Geometry Nodes and writes the resulting four legs
+as one mesh. No button-specific export or validation script is part of the
+asset workflow.

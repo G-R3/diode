@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { holePosition, parseHoleId } from "@/lib/breadboard";
 import {
+  COMPONENT_SPAN,
   isPlacementFree,
   occupiedHoles,
   placementTarget,
@@ -9,6 +10,7 @@ import type { BatteryTerminalPositions, Vec3 } from "@/lib/types";
 import { WIRE_CABLE_RADIUS, wireEndPosition } from "@/lib/wire-geometry";
 import { WIRE_COLORS } from "@/lib/wireColors";
 import { useCircuitStore } from "@/store/circuitStore";
+import { ButtonGhost } from "./button-model";
 import { LedGhost } from "./led-model";
 import { jumperCurve, wireTubularSegments } from "./paths";
 import { ResistorGhost } from "./resistor-model";
@@ -68,6 +70,15 @@ export function GhostPreview({
     const target = placementTarget(anchor, tool.component, tool.dir);
     if (!target) {
       const p = holePosition(anchor);
+      if (tool.component === "button") {
+        const span = COMPONENT_SPAN.button;
+        const b: Vec3 = [
+          p[0] + (tool.dir === 0 ? span : tool.dir === 2 ? -span : 0),
+          p[1],
+          p[2] + (tool.dir === 1 ? span : tool.dir === 3 ? -span : 0),
+        ];
+        return <ButtonGhost a={p} b={b} valid={false} />;
+      }
       return <GhostBody a={p} b={p} valid={false} />;
     }
     const valid = isPlacementFree(target, occupied);
@@ -79,7 +90,7 @@ export function GhostPreview({
     if (tool.component === "led") {
       return <LedGhost a={a} b={b} valid={valid} />;
     }
-    return <GhostBody a={a} b={b} valid={valid} />;
+    return <ButtonGhost a={a} b={b} valid={valid} />;
   }
 
   if (tool.kind === "wire" && wireStart && hoverHole) {

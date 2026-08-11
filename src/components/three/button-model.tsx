@@ -1,81 +1,130 @@
+import { useGLTF } from "@react-three/drei";
 import type { ThreeEvent } from "@react-three/fiber";
 import { useMemo } from "react";
+import * as THREE from "three";
 import type { Vec3 } from "@/lib/types";
-import { type Highlight, highlightProps } from "./highlight";
-import { Cyl } from "./util";
+import {
+  cloneTwoTerminalAsset,
+  invisibleHitboxMaterial,
+  placementGhostMaterials,
+  type TwoTerminalAsset,
+  twoTerminalTransform,
+} from "./two-terminal-asset";
+
+const MODEL_URL = "/models/button.glb";
+
+interface ButtonAsset extends TwoTerminalAsset {
+  actuator: THREE.Mesh;
+  actuatorRestY: number;
+  pressedOffsetY: number;
+}
 
 interface ButtonModelProps {
   a: Vec3;
   b: Vec3;
   pressed: boolean;
-  highlight: Highlight;
   onPress: (down: boolean) => void;
 }
 
-export function ButtonModel({
-  a,
-  b,
-  pressed,
-  highlight,
-  onPress,
-}: ButtonModelProps) {
-  const { mid, angle, baseLen } = useMemo(() => {
-    const dx = b[0] - a[0];
-    const dz = b[2] - a[2];
-    const baseLen = Math.hypot(dx, dz) + 1.2;
-    return {
-      mid: [(a[0] + b[0]) / 2, 0, (a[2] + b[2]) / 2] as Vec3,
-      angle: -Math.atan2(dz, dx),
-      baseLen,
-    };
-  }, [a, b]);
+export function ButtonModel({ a, b, pressed, onPress }: ButtonModelProps) {
+  const { scene } = useGLTF(MODEL_URL);
+  const asset = useMemo(() => prepareButton(scene), [scene]);
+  const transform = useMemo(
+    () => twoTerminalTransform(a, b, asset.anchorA, asset.anchorB),
+    [a, asset.anchorA, asset.anchorB, b],
+  );
 
-  const capY = pressed ? 0.78 : 0.98;
-
-  const down = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
+  const down = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation();
     onPress(true);
   };
-  const up = () => onPress(false);
 
   return (
-    <group>
-      <Cyl
-        from={a}
-        to={[mid[0] - 0.5, 0.35, mid[2]]}
-        radius={0.08}
-        color="#b9bdc4"
+    <group position={transform.position} quaternion={transform.quaternion}>
+      <primitive object={asset.model} dispose={null} />
+      <primitive
+        object={asset.actuator}
+        dispose={null}
+        position={[
+          asset.actuator.position.x,
+          asset.actuatorRestY + (pressed ? asset.pressedOffsetY : 0),
+          asset.actuator.position.z,
+        ]}
       />
-      <Cyl
-        from={b}
-        to={[mid[0] + 0.5, 0.35, mid[2]]}
-        radius={0.08}
-        color="#b9bdc4"
+      <primitive
+        object={asset.hitbox}
+        dispose={null}
+        material={invisibleHitboxMaterial}
+        onPointerDown={down}
+        onPointerOut={() => onPress(false)}
+        onPointerUp={() => onPress(false)}
       />
-      <group position={[mid[0], 0, mid[2]]} rotation={[0, angle, 0]}>
-        <mesh position={[0, 0.4, 0]}>
-          <boxGeometry args={[baseLen, 0.7, 1.9]} />
-          <meshStandardMaterial
-            color="#3f3f46"
-            roughness={0.6}
-            {...highlightProps(highlight)}
-          />
-        </mesh>
-        <mesh
-          position={[0, capY, 0]}
-          onPointerDown={down}
-          onPointerUp={up}
-          onPointerOut={up}
-        >
-          <cylinderGeometry args={[0.55, 0.55, 0.55, 18]} />
-          <meshStandardMaterial
-            color={pressed ? "#b91c1c" : "#ef4444"}
-            roughness={0.4}
-            emissive={pressed ? "#7f1d1d" : "#000000"}
-            emissiveIntensity={pressed ? 0.4 : 0}
-          />
-        </mesh>
-      </group>
     </group>
   );
 }
+
+export function ButtonGhost({
+  a,
+  b,
+  valid,
+}: {
+  a: Vec3;
+  b: Vec3;
+  valid: boolean;
+}) {
+  const { scene } = useGLTF(MODEL_URL);
+  const asset = useMemo(() => prepareButtonGhost(scene, valid), [scene, valid]);
+  const transform = useMemo(
+    () => twoTerminalTransform(a, b, asset.anchorA, asset.anchorB),
+    [a, asset.anchorA, asset.anchorB, b],
+  );
+
+  return (
+    <group position={transform.position} quaternion={transform.quaternion}>
+      <primitive object={asset.model} dispose={null} />
+    </group>
+  );
+}
+
+function prepareButton(source: THREE.Object3D): ButtonAsset {
+  const asset = cloneButtonAsset(source);
+  asset.hitbox.visible = true;
+  asset.actuator.removeFromParent();
+  asset.hitbox.removeFromParent();
+  return asset;
+}
+
+function prepareButtonGhost(
+  source: THREE.Object3D,
+  valid: boolean,
+): TwoTerminalAsset {
+  const asset = cloneButtonAsset(source);
+  asset.hitbox.visible = false;
+  asset.visuals.forEach((visual) => {
+    visual.visible = true;
+    visual.material = placementGhostMaterials[valid ? "valid" : "invalid"];
+  });
+  return asset;
+}
+
+function cloneButtonAsset(source: THREE.Object3D): ButtonAsset {
+  const asset = cloneTwoTerminalAsset(source, "Button");
+  const actuator = asset.model.getObjectByName("ButtonVisual_Actuator");
+  if (!(actuator instanceof THREE.Mesh)) {
+    throw new Error("button.glb must export ButtonVisual_Actuator");
+  }
+
+  const pressedOffsetY = actuator.userData.pressed_offset_y;
+  if (typeof pressedOffsetY !== "number" || !Number.isFinite(pressedOffsetY)) {
+    throw new Error("button.glb actuator must export pressed_offset_y");
+  }
+
+  return {
+    ...asset,
+    actuator,
+    actuatorRestY: actuator.position.y,
+    pressedOffsetY,
+  };
+}
+
+useGLTF.preload(MODEL_URL);

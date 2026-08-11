@@ -14,9 +14,9 @@ import type {
  * Electrical network extracted from the board.
  *
  * Every electrically continuous breadboard strip that is actually used
- * becomes a node, plus one node per battery terminal. Wires and closed
- * buttons are modeled as tiny resistances (not node merges) so each one
- * carries a well-defined current we can visualize.
+ * becomes a node, plus one node per battery terminal. Permanently paired
+ * button legs share a node. Wires and closed button contacts remain tiny
+ * resistances so their current stays measurable.
  */
 
 export const WIRE_R = 0.005;
@@ -63,17 +63,47 @@ export function buildNetlist(
   battery: Battery,
 ): Netlist {
   const nodeOfStrip = new Map<StripId, number>();
+  const pairedStripParent = new Map<StripId, StripId>();
   let nodeCount = 2; // 0 = battery minus (ground), 1 = battery plus
 
-  function nodeOfHole(id: HoleId): number {
+  function stripOfHoleId(id: HoleId): StripId | null {
     const hole = parseHoleId(id);
-    if (!hole) return 0;
-    const strip = stripOfHole(hole);
-    let node = nodeOfStrip.get(strip);
+    return hole ? stripOfHole(hole) : null;
+  }
+
+  function rootOfStrip(strip: StripId): StripId {
+    const parent = pairedStripParent.get(strip);
+    if (!parent) return strip;
+    const root = rootOfStrip(parent);
+    pairedStripParent.set(strip, root);
+    return root;
+  }
+
+  function pairStrips(first: HoleId, second: HoleId): void {
+    const firstStrip = stripOfHoleId(first);
+    const secondStrip = stripOfHoleId(second);
+    if (!firstStrip || !secondStrip) return;
+    const firstRoot = rootOfStrip(firstStrip);
+    const secondRoot = rootOfStrip(secondStrip);
+    if (firstRoot !== secondRoot) pairedStripParent.set(secondRoot, firstRoot);
+  }
+
+  for (const component of components) {
+    if (component.kind !== "button") continue;
+    pairStrips(component.holeA1, component.holeA2);
+    pairStrips(component.holeB1, component.holeB2);
+  }
+
+  function nodeOfHole(id: HoleId): number {
+    const strip = stripOfHoleId(id);
+    if (!strip) return 0;
+    const root = rootOfStrip(strip);
+    let node = nodeOfStrip.get(root);
     if (node === undefined) {
       node = nodeCount++;
-      nodeOfStrip.set(strip, node);
+      nodeOfStrip.set(root, node);
     }
+    nodeOfStrip.set(strip, node);
     return node;
   }
 
@@ -97,10 +127,10 @@ export function buildNetlist(
   }
 
   for (const comp of components) {
-    const nodeA = nodeOfHole(comp.holeA);
-    const nodeB = nodeOfHole(comp.holeB);
     switch (comp.kind) {
-      case "resistor":
+      case "resistor": {
+        const nodeA = nodeOfHole(comp.holeA);
+        const nodeB = nodeOfHole(comp.holeB);
         branches.push({
           kind: "resistor",
           id: comp.id,
@@ -109,7 +139,10 @@ export function buildNetlist(
           n2: nodeB,
         });
         break;
-      case "led":
+      }
+      case "led": {
+        const nodeA = nodeOfHole(comp.holeA);
+        const nodeB = nodeOfHole(comp.holeB);
         // Conducts anode (+) → cathode (−) = holeB → holeA.
         branches.push({
           kind: "led",
@@ -120,16 +153,23 @@ export function buildNetlist(
           n2: nodeA,
         });
         break;
-      case "button":
+      }
+      case "button": {
+        const nodeA1 = nodeOfHole(comp.holeA1);
+        const nodeB1 = nodeOfHole(comp.holeB1);
+        // Register every physical strip in nodeOfStrip for voltage labels.
+        nodeOfHole(comp.holeA2);
+        nodeOfHole(comp.holeB2);
         branches.push({
           kind: "button",
           id: comp.id,
           closed: comp.pressed,
           r: BUTTON_R,
-          n1: nodeA,
-          n2: nodeB,
+          n1: nodeA1,
+          n2: nodeB1,
         });
         break;
+      }
       default: {
         const _exhaustive: never = comp;
         void _exhaustive;

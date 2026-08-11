@@ -34,12 +34,13 @@ export type ComponentStatus =
 
 export interface ComponentReading {
   /**
-   * Amps along the branch: holeA→holeB for resistors/buttons,
+   * Amps along the branch: holeA→holeB for resistors, A1→B1 for buttons,
    * anode→cathode (holeB→holeA) for LEDs.
    */
   current: number;
   /**
-   * Voltage along the branch: V(holeA)−V(holeB) for resistors/buttons,
+   * Voltage along the branch: V(holeA)−V(holeB) for resistors,
+   * V(A1)−V(B1) for buttons,
    * V(anode)−V(cathode) for LEDs.
    */
   voltageDrop: number;
@@ -215,7 +216,8 @@ function inBatteryLoop(net: Netlist, br: Branch): boolean {
     const seen = new Set<number>([start]);
     const queue = [start];
     while (queue.length > 0) {
-      const node = queue.pop()!;
+      const node = queue.pop();
+      if (node === undefined) break;
       for (const other of net.branches) {
         if (
           other === br ||
