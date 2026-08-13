@@ -20,7 +20,7 @@ export default defineConfig({
               name: "three",
               test: /node_modules[\\/]three(?:[\\/]|-stdlib)/,
               maxSize: 450_000,
-              priority: 2,
+              // priority: 2,
             },
             {
               name: "react-three",
