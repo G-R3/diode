@@ -1,4 +1,4 @@
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, StatsGl } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import type { Wire } from "@/lib/types";
@@ -69,6 +69,12 @@ export function SceneCanvas() {
         maxPolarAngle={Math.PI / 2 - 0.06}
         enableDamping
       />
+      {import.meta.env.DEV && (
+        <StatsGl
+          className="pointer-events-none fixed left-2 top-14 z-50"
+          trackGPU
+        />
+      )}
     </Canvas>
   );
 }
