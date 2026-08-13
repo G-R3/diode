@@ -11,4 +11,32 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: "three",
+              test: /node_modules[\\/]three(?:[\\/]|-stdlib)/,
+              maxSize: 450_000,
+              priority: 2,
+            },
+            {
+              name: "react-three",
+              test: /node_modules[\\/]@react-three[\\/]/,
+            },
+            {
+              name: "react",
+              test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/,
+            },
+            {
+              name: "base-ui",
+              test: /node_modules[\\/]@base-ui[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
 });
